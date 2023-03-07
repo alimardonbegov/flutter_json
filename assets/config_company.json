@@ -1,6 +1,17 @@
- директор
-компания
-
-
-
-
+{
+    "director_name": {
+        "title": "Director name",
+        "exampleOfFilling": "Ivanov Ivan",
+        "hint": "Fill the surname and name from passport"
+    },
+    "company_name": {
+        "title": "company name",
+        "exampleOfFilling": "Achiever",
+        "hint": "Fill the company name"
+    },
+    "company_pib": {
+        "title": "company PIB",
+        "exampleOfFilling": "Ivanov",
+        "hint": "Fill the company PIB"
+    }
+}

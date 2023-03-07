@@ -1,1 +1,7 @@
-/* дату подачи например, которая нигде не хранится */
+{
+    "date": {
+        "title": "date on document",
+        "exampleOfFilling": "07.03.2023",
+        "hint": "Fill date of the document"
+    }
+}
