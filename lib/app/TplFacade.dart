@@ -3,25 +3,13 @@ import 'package:pocketbase/pocketbase.dart';
 import 'DataSource.dart';
 import 'TplGenerator.dart';
 
-abstract class TplFacade {
-  final Map<String, String> templateData;
-  TplFacade({required this.templateData});
-  Future<void> generateDocument();
-}
-
-class TplFacadeRemote extends TplFacade {
-  final String id;
-
-  TplFacadeRemote({required this.id, required super.templateData});
-
-  @override
-  Future<void> generateDocument() async {
-    final dataSource = Modular.get<DataSource>();
-    final RecordModel record =
-        await dataSource.pb.collection('documents').getOne(id);
-    final String firstFilename = record.getListValue<String>('document')[0];
-    final String fullTplPath =
-        dataSource.pb.getFileUrl(record, firstFilename).toString();
+class TplFacade {
+  generateDocumentFromRemoteTpl(
+      Map<String, String> templateData, String id) async {
+    final ds = Modular.get<DataSource>();
+    final RecordModel record = await ds.pb.collection('documents').getOne(id);
+    final String fileName = record.getListValue<String>('document')[0];
+    final String fullTplPath = ds.pb.getFileUrl(record, fileName).toString();
 
     final TplGenerator _generator = TplGenerator(
       templateData: templateData,
@@ -31,13 +19,9 @@ class TplFacadeRemote extends TplFacade {
     );
     _generator.createDocument();
   }
-}
 
-class TplFacadeLocal extends TplFacade {
-  final String tplPath;
-  TplFacadeLocal({required this.tplPath, required super.templateData});
-  @override
-  Future<void> generateDocument() async {
+  generateDocumentFromLocalTpl(
+      Map<String, String> templateData, String tplPath) {
     final TplGenerator _generator = TplGenerator(
       templateData: templateData,
       tplPath: tplPath,

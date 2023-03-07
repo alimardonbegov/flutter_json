@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_js/app/TplFacade.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:pocketbase/pocketbase.dart';
 import '../app/DataSource.dart';
 import './cubit.dart';
 
@@ -46,9 +45,7 @@ class UsersListWidget extends StatelessWidget {
     };
     String id = "2sylungy3q251b9";
 
-    TplFacade tpl = TplFacadeRemote(id: id, templateData: templateData);
-    tpl.generateDocument();
-
+    TplFacade().generateDocumentFromRemoteTpl(templateData, id);
     return true;
   }
 
