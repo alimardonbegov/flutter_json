@@ -23,8 +23,8 @@ class TplGenerator {
     print(response.mergeStatus);
     print(response.message);
 
-    var fields = docxTpl.getMergeFields();
-    print('Template file fields found: $fields');
+    // var fields = docxTpl.getMergeFields();
+    // print('Template file fields found: $fields');
     // добавить проверку наличия в templateData всех значений, по ключам которые должны совпадать с fields
 
     if (response.mergeStatus == MergeResponseStatus.Success) {

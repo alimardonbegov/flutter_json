@@ -32,6 +32,7 @@ class HomePage extends StatelessWidget {
 
 class UsersListWidget extends StatelessWidget {
   final dataSource = Modular.get<DataSource>();
+  final tplFacade = Modular.get<TplFacade>();
 
   Future<bool> getUsers() async {
     await dataSource.getInitData();
@@ -45,7 +46,7 @@ class UsersListWidget extends StatelessWidget {
     };
     String id = "2sylungy3q251b9";
 
-    TplFacade().generateDocumentFromRemoteTpl(templateData, id);
+    tplFacade.generateDocumentFromRemoteTpl(templateData, id);
     return true;
   }
 

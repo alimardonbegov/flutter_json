@@ -15,6 +15,9 @@ abstract class DataSource {
   late final List<dynamic> _usersList;
   List<dynamic> get usersList => _usersList;
 
+  late final List<dynamic> _companiesList;
+  List<dynamic> get companiesList => _companiesList;
+
   Future<Map<String, dynamic>> readData(String id);
   Future<void> updateData(
     String id,
@@ -31,8 +34,13 @@ class PocketBaseDataSource extends DataSource {
 
   @override
   Future<void> getInitData() async {
-    final records = await pb.collection('select').getFullList();
-    _usersList = records;
+    final recordsUsers = await pb.collection('select').getFullList();
+    final recordsCompanies = await pb.collection('companies').getFullList();
+
+    _usersList = recordsUsers;
+    _companiesList = recordsCompanies;
+
+    print("recordsCompanies is $recordsCompanies ");
 
     final File fileData = File(configPath);
     final String jsonData = await fileData.readAsString();
@@ -48,7 +56,7 @@ class PocketBaseDataSource extends DataSource {
   Future<Map<String, dynamic>> readData(String id) async {
     if (id != null) {
       try {
-        final record = await pb.collection('thousandUsers').getOne(id);
+        final record = await pb.collection('users').getOne(id);
         return record.data["json"];
       } catch (e) {
         print("error fetchin data by this id: $id");
@@ -70,7 +78,7 @@ class PocketBaseDataSource extends DataSource {
       jsonItem[key] = value;
       final jsonDataUpdated = jsonEncode(jsonItem);
       final body = <String, dynamic>{"json": jsonDataUpdated};
-      await pb.collection('thousandUsers').update(id, body: body);
+      await pb.collection('users').update(id, body: body);
     }
   }
 }

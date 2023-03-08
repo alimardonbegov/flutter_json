@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_js/app/TplFacade.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
 import './app/DataSource.dart';
@@ -33,6 +34,7 @@ class AppModule extends Module {
         Bind.factory<PocketBase>((i) => pb),
         Bind.singleton(
             (i) => PocketBaseDataSource(i(), "assets/config_users.json")),
+        Bind.singleton((i) => TplFacade(i())),
       ];
 
   List<ModularRoute> get routes => [

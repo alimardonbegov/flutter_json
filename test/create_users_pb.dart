@@ -28,7 +28,7 @@ void main() async {
         "Viber number": ""
       }
     };
-    final record = await pb.collection('thousandUsers').create(body: body);
+    final record = await pb.collection('users').create(body: body);
     print("$number done");
   }
 
