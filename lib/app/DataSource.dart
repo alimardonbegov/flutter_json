@@ -18,7 +18,8 @@ abstract class DataSource {
   late final List<dynamic> _companiesList;
   List<dynamic> get companiesList => _companiesList;
 
-  Future<Map<String, dynamic>> readData(String id);
+  Future<Map<String, dynamic>> readData(String id, String collectionName);
+
   Future<void> updateData(
     String id,
     Map<String, dynamic> jsonItem,
@@ -35,12 +36,11 @@ class PocketBaseDataSource extends DataSource {
   @override
   Future<void> getInitData() async {
     final recordsUsers = await pb.collection('select').getFullList();
-    final recordsCompanies = await pb.collection('companies').getFullList();
-
     _usersList = recordsUsers;
-    _companiesList = recordsCompanies;
 
-    print("recordsCompanies is $recordsCompanies ");
+    // final recordsCompanies = await pb.collection('companies').getFullList();
+    // _companiesList = recordsCompanies;
+    // print("recordsCompanies is $recordsCompanies ");
 
     final File fileData = File(configPath);
     final String jsonData = await fileData.readAsString();
@@ -53,10 +53,11 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> readData(String id) async {
+  Future<Map<String, dynamic>> readData(
+      String id, String collectionName) async {
     if (id != null) {
       try {
-        final record = await pb.collection('users').getOne(id);
+        final record = await pb.collection(collectionName).getOne(id);
         return record.data["json"];
       } catch (e) {
         print("error fetchin data by this id: $id");

@@ -10,7 +10,7 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   Future<void> choseUser(String id) async {
     if (state.id == id) return;
     emit(ChosenUserCubitStateLoading());
-    final jsonItem = await ds.readData(id);
+    final jsonItem = await ds.readData(id, "users");
     try {
       emit(ChosenUserCubitStateReady(jsonItem, id));
     } catch (e) {

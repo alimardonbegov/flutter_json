@@ -1,15 +1,15 @@
 {
-    "director_name": {
+    "COMPANY_DIRECTOR": {
         "title": "Director name",
         "exampleOfFilling": "Ivanov Ivan",
         "hint": "Fill the surname and name from passport"
     },
-    "company_name": {
+    "COMPANY_NAME": {
         "title": "company name",
         "exampleOfFilling": "Achiever",
         "hint": "Fill the company name"
     },
-    "company_pib": {
+    "COMPANY_PIB": {
         "title": "company PIB",
         "exampleOfFilling": "Ivanov",
         "hint": "Fill the company PIB"

@@ -1,9 +1,10 @@
 {
-    "surname_name": {
+    "CLIENT_FIO_UC": {
         "title": "surname and name",
         "exampleOfFilling": "Ivanov Ivan",
         "hint": "Fill the surname and name from passport"
     },
+
     "father_name": {
         "title": "father name",
         "exampleOfFilling": "Ivanonich",
@@ -30,7 +31,7 @@
         "exampleOfFilling": "Budva",
         "hint": "Enter city"
     },
-    "passport": {
+    "CLIENT_PASSPORT": {
         "title": "passport",
         "exampleOfFilling": "9988 776655",
         "hint": "Enter passport number"

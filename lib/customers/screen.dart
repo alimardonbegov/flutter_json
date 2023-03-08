@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_js/app/TplFacade.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:http/http.dart' as http;
 import '../app/DataSource.dart';
 import './cubit.dart';
 
@@ -37,16 +38,19 @@ class UsersListWidget extends StatelessWidget {
   Future<bool> getUsers() async {
     await dataSource.getInitData();
 
-    Map<String, String> templateData = {
-      'CLIENT_FIO_UC': 'Begov Alimardon',
-      'CLIENT_PASSPORT': '9988 777666',
-      'COMPANY_NAME': 'Vanguard',
-      'COMPANY_PIB': '00010010110',
-      'DD_MM_YYYY': '02.03.2023',
-    };
-    String id = "2sylungy3q251b9";
+    String tplId = "2sylungy3q251b9";
+    String userId = "cp1av3rjk3kjg5k";
+    String companyId = "vg9gxst3i1a13qe";
 
-    tplFacade.generateDocumentFromRemoteTpl(templateData, id);
+    //! id компании не нужно передавать, т.к. id должен быть привязн к user уже
+    await tplFacade.generateDocumentFromRemoteTpl(tplId, userId, companyId);
+
+    // http.MultipartFile.fromBytes(field, value);
+
+    // String filePath =
+    //     "C:/Users/Alima/Desktop/projects/30. Document_generator/flutter_js/generatedDocument.docx";
+    // String url = "http://127.0.0.1:8090/api/collections/documents/records";
+    // await tplFacade.uploadDocumentToPb(url, filePath);
     return true;
   }
 
@@ -138,7 +142,6 @@ class InputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = BlocProvider.of<ChosenUserCubit>(context);
     return Focus(
         child: TextFormField(
           decoration: InputDecoration(
