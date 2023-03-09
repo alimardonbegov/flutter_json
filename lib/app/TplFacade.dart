@@ -50,8 +50,24 @@ class TplFacade {
     print("done generating document");
   }
 
-  // uploadDocumentToPb() async {
-  // }
+  uploadDocumentToPb() async {
+    final file = File(
+        "C:/Users/Alima/Desktop/projects/30. Document_generator/flutter_js/generatedDocument.docx");
+    final bytes = file.readAsBytesSync();
+
+    final record = await pb.collection('documents').create(
+      body: {
+        'title': 'Hello world!', // some regular text field
+      },
+      files: [
+        http.MultipartFile.fromBytes(
+          "document",
+          bytes,
+          filename: "generatedDoc.docx",
+        )
+      ],
+    );
+  }
 
   // generateDocumentFromLocalTpl(
   //     Map<String, String> templateData, String tplPath) {

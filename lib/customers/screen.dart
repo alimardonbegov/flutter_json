@@ -43,14 +43,14 @@ class UsersListWidget extends StatelessWidget {
     String companyId = "vg9gxst3i1a13qe";
 
     //! id компании не нужно передавать, т.к. id должен быть привязн к user уже
-    await tplFacade.generateDocumentFromRemoteTpl(tplId, userId, companyId);
+    // await tplFacade.generateDocumentFromRemoteTpl(tplId, userId, companyId);
 
     // http.MultipartFile.fromBytes(field, value);
 
     // String filePath =
     //     "C:/Users/Alima/Desktop/projects/30. Document_generator/flutter_js/generatedDocument.docx";
     // String url = "http://127.0.0.1:8090/api/collections/documents/records";
-    // await tplFacade.uploadDocumentToPb(url, filePath);
+    // await tplFacade.uploadDocumentToPb();
     return true;
   }
 
