@@ -13,11 +13,11 @@ void main() async {
       "password": "12345678",
       "passwordConfirm": "12345678",
       "json": {
-        "surname": "",
-        "name": "",
+        "CLIENT_FIO_UC": "",
+        "father_name": "",
         "country": "",
         "city": "",
-        "passport": "9988 776655",
+        "CLIENT_PASSPORT": "9988 776655",
         "phone number": "+999 999 999 99 99 ",
         "gender": "",
         "date of birth": "66 00 ",
@@ -32,7 +32,7 @@ void main() async {
     print("$number done");
   }
 
-  for (int i = 333; i < 666; i++) {
+  for (int i = 333; i < 340; i++) {
     createRecord(i);
   }
 }

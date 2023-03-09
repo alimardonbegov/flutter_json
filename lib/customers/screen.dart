@@ -107,7 +107,7 @@ class ConfigInputsWidget extends StatelessWidget {
             child: Column(
                 children: dataSource.config.entries
                     .map((entrie) => InputWidget(
-                          initValue: state.data[entrie.value["title"]] ?? "",
+                          initValue: state.data[entrie.key] ?? "",
                           config: entrie.value,
                           onStopEditing: cubit.updateUserData,
                           id: state.id,
