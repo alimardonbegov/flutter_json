@@ -24,26 +24,11 @@ class TplGenerator {
     print(response.message);
 
     List<String> fields = docxTpl.getMergeFields();
-    print('Template file fields found: $fields');
     Map<String, String> mapFromField = Map.fromIterable(fields);
-    print(mapFromField);
-
-    // var mapping = {
-    //   "COMPANY_NAME": "company_name"
-    // }
-
-    // mapFromField.keys.forEach((fieldKey) {
-    //   userAndCompanyMap.keys.forEach((clientKey) {
-    //     if (fi)
-    //   });
-    // });
-    // !2
-    // здесь будем создавать новую MAP, которую будем передавать в док для замены,
-    // где ключ это field из документов, а значения из MAP, которую соберем общую по user и company
-    // добавить проверку наличия в templateData всех значений, по ключам которые должны совпадать с fields
+    Map<String, String> mapForTpl = {...mapFromField, ...userAndCompanyMap};
 
     if (response.mergeStatus == MergeResponseStatus.Success) {
-      await docxTpl.writeMergeFields(data: userAndCompanyMap);
+      await docxTpl.writeMergeFields(data: mapForTpl);
       var savedFile = await docxTpl.save('generatedDocument.docx');
     }
   }

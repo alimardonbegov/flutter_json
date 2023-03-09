@@ -12,35 +12,36 @@ class TplFacade {
 
   generateDocumentFromRemoteTpl(
     String tplId,
-    String userId,
     String companyId,
   ) async {
     print("start generating document");
 
-    // получаем MAP user
-    final ds = Modular.get<DataSource>();
-    final Map<String, dynamic> userMap = await ds.readData(userId, "users");
+    final DataSource ds = Modular.get<DataSource>();
 
-    // получаем MAP company (здесь придумать получение MAP company через user тк он связан с компание по id)
-    final Map<String, dynamic> companyMap =
-        await ds.readData(companyId, "companies");
+    // получаем MAP company
+    final RecordModel recordCompanyForTpl =
+        await pb.collection('selectForTpl').getOne(companyId);
+    final Map<String, dynamic> mapFromRecordCompany = recordCompanyForTpl.data;
+
+    final Map<String, dynamic> companyMap = {
+      "COMPANY_NAME": mapFromRecordCompany["company_name"],
+      "COMPANY_PIB": mapFromRecordCompany["company_pib"],
+    };
+
+    // получаем MAP user
+    final String userId = mapFromRecordCompany["user_id"];
+    final Map<String, dynamic> userMap = await ds.readData(userId, "users");
 
     // заворачиваем в одну MAP (userAndCompanyMap)
     final Map<String, String> userAndCompanyMap = {...userMap, ...companyMap};
-    print(userAndCompanyMap);
-    // получаем ссылку на тимплэйт, которую нужно передать будет в генератор
-    final RecordModel record = await pb.collection('templates').getOne(tplId);
-    final String fileName = record.getListValue<String>('document')[0];
-    final String fullTplPath = pb.getFileUrl(record, fileName).toString();
 
-    Map<String, String> templateData = {
-      'CLIENT_FIO_UC': 'Begov Alimardon',
-      'CLIENT_PASSPORT': '9988 777666',
-      'COMPANY_NAME': 'Vanguard',
-      'COMPANY_PIB': '00010010110',
-      'DD_MM_YYYY': '02.03.2023',
-    };
-    final TplGenerator _generator = TplGenerator(
+    // получаем ссылку на тимплэйт, которую нужно передать будет в генератор
+    final RecordModel recordTpl =
+        await pb.collection('templates').getOne(tplId);
+    final String fileName = recordTpl.getListValue<String>('document')[0];
+    final String fullTplPath = pb.getFileUrl(recordTpl, fileName).toString();
+
+    final _generator = TplGenerator(
       userAndCompanyMap: userAndCompanyMap,
       tplPath: fullTplPath,
       isRemoteFile: true,
