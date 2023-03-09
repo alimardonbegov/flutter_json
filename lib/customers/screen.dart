@@ -105,12 +105,13 @@ class ConfigInputsWidget extends StatelessWidget {
         } else if (state is ChosenUserCubitStateReady) {
           return SingleChildScrollView(
             child: Column(
-                children: dataSource.config.values
-                    .map((value) => InputWidget(
-                          initValue: state.data[value["title"]] ?? "",
-                          config: value,
+                children: dataSource.config.entries
+                    .map((entrie) => InputWidget(
+                          initValue: state.data[entrie.value["title"]] ?? "",
+                          config: entrie.value,
                           onStopEditing: cubit.updateUserData,
                           id: state.id,
+                          keyMap: entrie.key,
                         ))
                     .toList()),
           );
@@ -126,6 +127,7 @@ class ConfigInputsWidget extends StatelessWidget {
 class InputWidget extends StatelessWidget {
   final String initValue;
   final String id;
+  final String keyMap;
   final Map<String, String> config;
   final Function onStopEditing;
   final TextEditingController _controller = TextEditingController();
@@ -136,6 +138,7 @@ class InputWidget extends StatelessWidget {
     required this.config,
     required this.onStopEditing,
     required this.id,
+    required this.keyMap,
   }) {
     _controller.text = initValue ?? "";
   }
@@ -152,7 +155,7 @@ class InputWidget extends StatelessWidget {
         ),
         onFocusChange: (hasFocus) {
           if (hasFocus) return;
-          onStopEditing(id, config["title"], _controller.text);
+          onStopEditing(id, keyMap, _controller.text);
         });
   }
 }
