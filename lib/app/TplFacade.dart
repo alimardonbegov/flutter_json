@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -8,38 +7,33 @@ import './DataSource.dart';
 
 class TplFacade {
   final PocketBase pb;
+  final DataSource ds = Modular.get<DataSource>();
+
   TplFacade(this.pb);
 
-  generateDocumentFromRemoteTpl(
+  Future<void> generateDocumentFromRemoteTpl(
     String tplId,
     String companyId,
   ) async {
-    print("start generating document");
-
-    final DataSource ds = Modular.get<DataSource>();
-
     // получаем MAP company
-    final RecordModel recordCompanyForTpl =
-        await pb.collection('selectForTpl').getOne(companyId);
-    final Map<String, dynamic> mapFromRecordCompany = recordCompanyForTpl.data;
+    final Map<String, dynamic> companyData =
+        await ds.readData(companyId, 'selectForTpl');
 
     final Map<String, dynamic> companyMap = {
-      "COMPANY_NAME": mapFromRecordCompany["company_name"],
-      "COMPANY_PIB": mapFromRecordCompany["company_pib"],
+      "COMPANY_NAME": companyData["company_name"],
+      "COMPANY_PIB": companyData["company_pib"],
     };
 
     // получаем MAP user
-    final String userId = mapFromRecordCompany["user_id"];
-    final Map<String, dynamic> userMap = await ds.readData(userId, "users");
+    final String userId = companyData["user_id"];
+    final Map<String, dynamic> userData = await ds.readData(userId, "users");
+    final Map<String, dynamic> userMap = userData["json"];
 
     // заворачиваем в одну MAP (userAndCompanyMap)
     final Map<String, String> userAndCompanyMap = {...userMap, ...companyMap};
 
-    // получаем ссылку на тимплэйт, которую нужно передать будет в генератор
-    final RecordModel recordTpl =
-        await pb.collection('templates').getOne(tplId);
-    final String fileName = recordTpl.getListValue<String>('document')[0];
-    final String fullTplPath = pb.getFileUrl(recordTpl, fileName).toString();
+    // получаем ссылку на тимплэйт
+    final String fullTplPath = await ds.readDocumentLink(tplId, 'templates');
 
     final _generator = TplGenerator(
       userAndCompanyMap: userAndCompanyMap,
@@ -47,27 +41,27 @@ class TplFacade {
       isRemoteFile: true,
       isAssetFile: false,
     );
-    _generator.createDocument();
-    print("done generating document");
+    await _generator.createDocument();
   }
 
-  uploadDocumentToPb() async {
-    final file = File(
-        "C:/Users/Alima/Desktop/projects/30. Document_generator/flutter_js/generatedDocument.docx");
+  Future<void> uploadDocumentToPb() async {
+    final path = Directory.current.path;
+    final file = File("${path}/tpl.docx");
     final bytes = file.readAsBytesSync();
 
     final record = await pb.collection('documents').create(
       body: {
-        'title': 'Hello world!', // some regular text field
+        'title': '',
       },
       files: [
         http.MultipartFile.fromBytes(
           "document",
           bytes,
-          filename: "generatedDoc.docx",
+          filename: "generatedDocument.docx",
         )
       ],
     );
+    file.deleteSync();
   }
 
   // generateDocumentFromLocalTpl(

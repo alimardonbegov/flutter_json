@@ -29,7 +29,7 @@ class TplGenerator {
 
     if (response.mergeStatus == MergeResponseStatus.Success) {
       await docxTpl.writeMergeFields(data: mapForTpl);
-      var savedFile = await docxTpl.save('generatedDocument.docx');
+      await docxTpl.save('tpl.docx');
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_js/app/TplFacade.dart';
@@ -36,13 +38,13 @@ class UsersListWidget extends StatelessWidget {
   final tplFacade = Modular.get<TplFacade>();
 
   Future<bool> getUsers() async {
-    await dataSource.getInitData();
+    await dataSource.getInitData("select");
 
     String tplId = "2sylungy3q251b9";
     String companyId = "bf2ckhikimw8b34";
 
     await tplFacade.generateDocumentFromRemoteTpl(tplId, companyId);
-
+    await tplFacade.uploadDocumentToPb();
     return true;
   }
 

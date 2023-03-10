@@ -15,10 +15,11 @@ abstract class DataSource {
   late final List<dynamic> _usersList;
   List<dynamic> get usersList => _usersList;
 
-  late final List<dynamic> _companiesList;
-  List<dynamic> get companiesList => _companiesList;
+  Future<void> getInitData(String collectionName);
 
   Future<Map<String, dynamic>> readData(String id, String collectionName);
+
+  Future<String> readDocumentLink(String docId, String collectionName);
 
   Future<void> updateData(
     String id,
@@ -26,7 +27,6 @@ abstract class DataSource {
     String key,
     String value,
   );
-  Future<void> getInitData();
 }
 
 // ! POCKET BASE
@@ -34,15 +34,12 @@ class PocketBaseDataSource extends DataSource {
   PocketBaseDataSource(super.pb, super.configPath);
 
   @override
-  Future<void> getInitData() async {
-    final recordsUsers = await pb.collection('select').getFullList();
+  Future<void> getInitData(collectionName) async {
+    final List<dynamic> recordsUsers =
+        await pb.collection(collectionName).getFullList();
     _usersList = recordsUsers;
 
-    // final recordsCompanies = await pb.collection('companies').getFullList();
-    // _companiesList = recordsCompanies;
-    // print("recordsCompanies is $recordsCompanies ");
-
-    final File fileData = File(configPath);
+    final fileData = File(configPath);
     final String jsonData = await fileData.readAsString();
     final jsonConfigParsed = jsonDecode(jsonData);
     final Map<String, Map<String, String>> finalMapFromJson = {};
@@ -58,14 +55,22 @@ class PocketBaseDataSource extends DataSource {
     if (id != null) {
       try {
         final record = await pb.collection(collectionName).getOne(id);
-        return record.data["json"];
+        return record.data;
       } catch (e) {
-        print("error fetchin data by this id: $id");
+        print("error fetching data by this id: $id");
       }
     } else {
       print("There is no data");
     }
     return <String, dynamic>{};
+  }
+
+  @override
+  Future<String> readDocumentLink(String docId, String collectionName) async {
+    final RecordModel recordTpl =
+        await pb.collection(collectionName).getOne(docId);
+    final String fileName = recordTpl.getListValue<String>('document')[0];
+    return pb.getFileUrl(recordTpl, fileName).toString();
   }
 
   @override
@@ -83,9 +88,6 @@ class PocketBaseDataSource extends DataSource {
     }
   }
 }
-
-
-
 
 
 // ! LOCAL
