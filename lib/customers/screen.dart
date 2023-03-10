@@ -44,7 +44,7 @@ class UsersListWidget extends StatelessWidget {
     String companyId = "bf2ckhikimw8b34";
 
     await tplFacade.generateDocumentFromRemoteTpl(tplId, companyId);
-    await tplFacade.uploadDocumentToPb();
+    // await tplFacade.uploadDocumentToPb();
     return true;
   }
 

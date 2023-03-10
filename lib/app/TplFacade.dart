@@ -15,26 +15,24 @@ class TplFacade {
     String tplId,
     String companyId,
   ) async {
-    // получаем MAP company
+// получаем MAP company, user и заворачиваем все в одну MAP
     final Map<String, dynamic> companyData =
         await ds.readData(companyId, 'selectForTpl');
-
     final Map<String, dynamic> companyMap = {
       "COMPANY_NAME": companyData["company_name"],
       "COMPANY_PIB": companyData["company_pib"],
     };
 
-    // получаем MAP user
     final String userId = companyData["user_id"];
     final Map<String, dynamic> userData = await ds.readData(userId, "users");
     final Map<String, dynamic> userMap = userData["json"];
 
-    // заворачиваем в одну MAP (userAndCompanyMap)
     final Map<String, String> userAndCompanyMap = {...userMap, ...companyMap};
 
-    // получаем ссылку на тимплэйт
+// получаем ссылку на тимплэйт
     final String fullTplPath = await ds.readDocumentLink(tplId, 'templates');
 
+//создаем документ из тимплейта и сохраняем локально
     final _generator = TplGenerator(
       userAndCompanyMap: userAndCompanyMap,
       tplPath: fullTplPath,
@@ -42,26 +40,36 @@ class TplFacade {
       isAssetFile: false,
     );
     await _generator.createDocument();
-  }
 
-  Future<void> uploadDocumentToPb() async {
+//отправляем документ в pb и удаляем локально
     final path = Directory.current.path;
     final file = File("${path}/tpl.docx");
-    final bytes = file.readAsBytesSync();
 
     final record = await pb.collection('documents').create(
       body: {
-        'title': '',
+        "user": userId, //привязываем документ к user
+        "company": companyId,
       },
       files: [
         http.MultipartFile.fromBytes(
           "document",
-          bytes,
-          filename: "generatedDocument.docx",
+          file.readAsBytesSync(),
+          filename: "gen.docx",
         )
       ],
     );
+
     file.deleteSync();
+
+// получаем ссылку на отправленный документ в pb (два раза обращение к pb - переписать):
+// - получаем первую запись в коллекции сгенерированых документов
+// - достаем id и генерируем ссылку документа
+
+    final documentData = await pb.collection("documents").getList(perPage: 1);
+    final String docID = documentData.items[0].id;
+    final String generatedDocumentLink =
+        await ds.readDocumentLink(docID, "documents");
+    print(generatedDocumentLink);
   }
 
   // generateDocumentFromLocalTpl(
