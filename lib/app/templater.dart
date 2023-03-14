@@ -16,14 +16,14 @@ class Templater {
     };
   }
 
-  Future<Map<String, String>> _createUserMap(
+  Future<Map<String, dynamic>> _createUserMap(
       Map<String, dynamic> companyData) async {
     final String userId = companyData["user_id"];
     final Map<String, dynamic> userData = await ds.getData(userId, "users");
     return userData["json"];
   }
 
-  Future<void> _createDocument(
+  Future<void> _createDocumentFromPb(
       String tplId, Map<String, String> userAndCompanyMap) async {
     final String fullTplPath = await ds.getDocumentLink(tplId, 'templates');
 
@@ -35,7 +35,7 @@ class Templater {
     await generator.createDocument();
   }
 
-  Future<RecordModel> _uploadDocumentToDB(
+  Future<void> _uploadDocumentToDB(
       Map<String, dynamic> companyData, String companyId) async {
     final String path = Directory.current.path;
     final String userId = companyData["user_id"];
@@ -44,7 +44,8 @@ class Templater {
     final record = await ds.sentDocumentToDB(file, userId, companyId);
     file.deleteSync();
 
-    return record;
+    final String link = await ds.getDocumentLink(record.id, "documents");
+    print(link);
   }
 
   Future<void> generateDocumentFromRemoteTpl(
@@ -54,15 +55,11 @@ class Templater {
     final Map<String, dynamic> companyData =
         await ds.getData(companyId, 'selectForTpl');
     final Map<String, String> companyMap = _createCompanyMap(companyData);
-    final Map<String, String> userMap = await _createUserMap(companyData);
+    final Map<String, dynamic> userMap = await _createUserMap(companyData);
     final Map<String, String> userAndCompanyMap = {...companyMap, ...userMap};
 
-    await _createDocument(tplId, userAndCompanyMap);
-    final documentRecord = await _uploadDocumentToDB(companyData, companyId);
-
-    final String documentId = documentRecord.data["id"];
-    final String link = await ds.getDocumentLink(documentId, "documents");
-    print(link);
+    await _createDocumentFromPb(tplId, userAndCompanyMap);
+    await _uploadDocumentToDB(companyData, companyId);
   }
 
   // generateDocumentFromLocalTpl(

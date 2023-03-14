@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_js/app/templater.dart';
@@ -40,8 +39,8 @@ class UsersListWidget extends StatelessWidget {
     String tplId = "2sylungy3q251b9";
     String companyId = "bf2ckhikimw8b34";
 
-    // final templater = Templater(dataSource);
-    // await templater.generateDocumentFromRemoteTpl(tplId, companyId);
+    final templater = Templater(dataSource);
+    await templater.generateDocumentFromRemoteTpl(tplId, companyId);
 
     return true;
   }
