@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_js/app/templater.dart';
@@ -34,15 +33,15 @@ class HomePage extends StatelessWidget {
 
 class UsersListWidget extends StatelessWidget {
   final dataSource = Modular.get<DataSource>();
-  // final Templater = Modular.get<Templater>();
+
   Future<bool> getUsers() async {
     await dataSource.getInitData("select");
 
     String tplId = "2sylungy3q251b9";
     String companyId = "bf2ckhikimw8b34";
 
-    final templater = Templater(dataSource);
-    await templater.generateDocumentFromRemoteTpl(tplId, companyId);
+    // final templater = Templater(dataSource);
+    // await templater.generateDocumentFromRemoteTpl(tplId, companyId);
 
     return true;
   }

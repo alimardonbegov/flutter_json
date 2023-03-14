@@ -31,8 +31,8 @@ class AppModule extends Module {
   @override
   List<Bind> get binds => [
         Bind.factory<PocketBase>((i) => pb),
-        Bind.singleton((i) => PocketBaseDataSource(i(),
-            "/Users/alimardon/Desktop/customers/flutter_json/assets/config_users.json")),
+        Bind.singleton(
+            (i) => PocketBaseDataSource(i(), "assets/config_users.json")),
       ];
 
   List<ModularRoute> get routes => [

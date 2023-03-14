@@ -12,6 +12,7 @@ class Templater {
     return {
       "COMPANY_NAME": companyData["company_name"],
       "COMPANY_PIB": companyData["company_pib"],
+      // добавить вручную новые строки для мэпы в тимплйэты
     };
   }
 

@@ -4,29 +4,28 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-    sdk: ">=2.18.6 <3.0.0"
+  sdk: ">=2.18.6 <3.0.0"
 
 dependencies:
-    flutter:
-        sdk: flutter
-    cupertino_icons: ^1.0.2
-    http: ^0.13.5
-    pocketbase: ^0.7.3
-    flutter_modular: any
-    flutter_bloc: ^8.0.0
-    bloc: ^8.0.0
-    docx_template: ^0.3.3
-    docxtpl:
-        path: ../docxtpl
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  http: ^0.13.5
+  pocketbase: ^0.7.3
+  flutter_modular: any
+  flutter_bloc: ^8.0.0
+  bloc: ^8.0.0
+  docx_template: ^0.3.3
+  docxtpl:
+    path: ../docxtpl
 
 dev_dependencies:
-    flutter_test:
-        sdk: flutter
-    flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
 
 flutter:
-    uses-material-design: true
-    assets:
-        - assets/tpl.docx
-        - assets/config_users.json
-
+  uses-material-design: true
+  assets:
+    - assets/tpl.docx
+    - assets/config_users.json

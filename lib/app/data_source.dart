@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:pocketbase/pocketbase.dart';
 
@@ -44,9 +45,8 @@ class PocketBaseDataSource extends DataSource {
         await pb.collection(collectionName).getFullList();
     _usersList = recordsUsers;
 
-    final fileData = File(configPath);
-    final String jsonData = await fileData.readAsString();
-    final jsonConfigParsed = jsonDecode(jsonData);
+    final String response = await rootBundle.loadString(configPath);
+    final jsonConfigParsed = await json.decode(response);
     final Map<String, Map<String, String>> finalMapFromJson = {};
     jsonConfigParsed.forEach((key, value) {
       finalMapFromJson[key] = value.cast<String, String>();
