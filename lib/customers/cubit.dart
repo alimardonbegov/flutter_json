@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
-import '../app/DataSource.dart';
+import '../app/data_source.dart';
 
 class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   final DataSource ds;
@@ -10,7 +10,7 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   Future<void> choseUser(String id) async {
     if (state.id == id) return;
     emit(ChosenUserCubitStateLoading());
-    final Map<String, dynamic> jsonData = await ds.readData(id, "users");
+    final Map<String, dynamic> jsonData = await ds.getData(id, "users");
     final Map<String, dynamic> jsonItem = jsonData["json"];
     try {
       emit(ChosenUserCubitStateReady(jsonItem, id));

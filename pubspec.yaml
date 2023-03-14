@@ -28,3 +28,5 @@ flutter:
     uses-material-design: true
     assets:
         - assets/tpl.docx
+        - assets/config_users.json
+

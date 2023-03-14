@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_js/app/TplFacade.dart';
+import 'package:flutter_js/app/templater.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:http/http.dart' as http;
-import '../app/DataSource.dart';
+import '../app/data_source.dart';
 import './cubit.dart';
 
 class HomePage extends StatelessWidget {
@@ -35,16 +34,16 @@ class HomePage extends StatelessWidget {
 
 class UsersListWidget extends StatelessWidget {
   final dataSource = Modular.get<DataSource>();
-  final tplFacade = Modular.get<TplFacade>();
-
+  // final Templater = Modular.get<Templater>();
   Future<bool> getUsers() async {
     await dataSource.getInitData("select");
 
     String tplId = "2sylungy3q251b9";
     String companyId = "bf2ckhikimw8b34";
 
-    await tplFacade.generateDocumentFromRemoteTpl(tplId, companyId);
-    // await tplFacade.uploadDocumentToPb();
+    final templater = Templater(dataSource);
+    await templater.generateDocumentFromRemoteTpl(tplId, companyId);
+
     return true;
   }
 
@@ -68,6 +67,7 @@ class UsersListWidget extends StatelessWidget {
             },
           );
         } else if (snapshot.hasError) {
+          print("snapshot error: ${snapshot.error}");
           return const Text("Something went wrong");
         } else {
           return const Center(child: CircularProgressIndicator());

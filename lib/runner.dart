@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_js/app/TplFacade.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
-import './app/DataSource.dart';
+import 'app/data_source.dart';
 import './main.dart';
 import './customers/screen.dart';
 
@@ -32,9 +31,8 @@ class AppModule extends Module {
   @override
   List<Bind> get binds => [
         Bind.factory<PocketBase>((i) => pb),
-        Bind.singleton(
-            (i) => PocketBaseDataSource(i(), "assets/config_users.json")),
-        Bind.singleton((i) => TplFacade(i())),
+        Bind.singleton((i) => PocketBaseDataSource(i(),
+            "/Users/alimardon/Desktop/customers/flutter_json/assets/config_users.json")),
       ];
 
   List<ModularRoute> get routes => [

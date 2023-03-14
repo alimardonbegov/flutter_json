@@ -17,15 +17,20 @@ abstract class DataSource {
 
   Future<void> getInitData(String collectionName);
 
-  Future<Map<String, dynamic>> readData(String id, String collectionName);
+  Future<Map<String, dynamic>> getData(String id, String collectionName);
 
-  Future<String> readDocumentLink(String docId, String collectionName);
+  Future<String> getDocumentLink(String docId, String collectionName);
 
   Future<void> updateData(
     String id,
     Map<String, dynamic> jsonItem,
     String key,
     String value,
+  );
+  Future<RecordModel> sentDocumentToDB(
+    File file,
+    String userId,
+    String companyId,
   );
 }
 
@@ -50,8 +55,7 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> readData(
-      String id, String collectionName) async {
+  Future<Map<String, dynamic>> getData(String id, String collectionName) async {
     if (id != null) {
       try {
         final record = await pb.collection(collectionName).getOne(id);
@@ -66,7 +70,7 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<String> readDocumentLink(String docId, String collectionName) async {
+  Future<String> getDocumentLink(String docId, String collectionName) async {
     final RecordModel recordTpl =
         await pb.collection(collectionName).getOne(docId);
     final String fileName = recordTpl.getListValue<String>('document')[0];
@@ -87,6 +91,25 @@ class PocketBaseDataSource extends DataSource {
       await pb.collection('users').update(id, body: body);
     }
   }
+
+  @override
+  Future<RecordModel> sentDocumentToDB(
+      File file, String userId, String companyId) async {
+    final record = await pb.collection('documents').create(
+      body: {
+        "user": userId, //привязываем документ к user
+        "company": companyId, //привязываем документ к company
+      },
+      files: [
+        http.MultipartFile.fromBytes(
+          "document",
+          file.readAsBytesSync(),
+          filename: "gen.docx",
+        )
+      ],
+    );
+    return record;
+  }
 }
 
 
@@ -101,7 +124,7 @@ class PocketBaseDataSource extends DataSource {
 //   }
 
 //   @override
-//   Future<void> readData(id) async {
+//   Future<void> getData(id) async {
 //     final jsonData = await _readLocalFile(dataPath);
 //     _jsonItem = jsonData;
 
@@ -142,7 +165,7 @@ class PocketBaseDataSource extends DataSource {
 //   }
 
 //   @override
-//   Future<void> readData(id) async {
+//   Future<void> getData(id) async {
 //     final jsonData = await _readHttpInf(dataPath);
 //     _jsonItem = jsonData;
 
