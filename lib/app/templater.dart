@@ -22,32 +22,6 @@ class Templater {
     return userData["json"];
   }
 
-  Future<void> _createDocument({
-    required Map<String, String> userAndCompanyMap,
-    String? tplPath,
-    String? tplPbId,
-  }) async {
-    late final String fullTplPath;
-    late final bool isRemoteTpl;
-
-    if (tplPath == null) {
-      fullTplPath = await ds.getDocumentLink(tplPbId!, 'templates');
-      isRemoteTpl = true;
-      print("create document from remote");
-    } else {
-      fullTplPath = tplPath;
-      isRemoteTpl = false;
-      print("create document from local");
-    }
-
-    final generator = _TplGenerator(
-      userAndCompanyMap: userAndCompanyMap!,
-      tplPath: fullTplPath,
-      isRemoteFile: isRemoteTpl,
-    );
-    await generator.createDocument();
-  }
-
   Future<void> _uploadDocumentToDB(
       Map<String, dynamic> companyData, String companyId) async {
     final String path = Directory.current.path;
@@ -61,11 +35,36 @@ class Templater {
     print(link);
   }
 
-  Future<void> generateDocument({
-    required String companyId,
-    String? tplPbId,
-    String? tplLocalPath,
-  }) async {
+  Future<void> _createDocumentFromRemote(
+    Map<String, String> userAndCompanyMap,
+    String tplId,
+  ) async {
+    final String fullTplPath = await ds.getDocumentLink(tplId, 'templates');
+
+    final generator = _TplGenerator(
+      userAndCompanyMap: userAndCompanyMap,
+      tplPath: fullTplPath,
+      isRemoteFile: true,
+    );
+    await generator.createDocument();
+  }
+
+  Future<void> _createDocumentFromLocal(
+    Map<String, String> userAndCompanyMap,
+    String tplPath,
+  ) async {
+    final generator = _TplGenerator(
+      userAndCompanyMap: userAndCompanyMap,
+      tplPath: tplPath,
+      isRemoteFile: false,
+    );
+    await generator.createDocument();
+  }
+
+  Future<void> generateDocumentFromRemote(
+    String companyId,
+    String tplPbId,
+  ) async {
     final Map<String, dynamic> companyData =
         await ds.getData(companyId, 'selectForTpl');
 
@@ -73,10 +72,27 @@ class Templater {
     final Map<String, dynamic> userMap = await _createUserMap(companyData);
     final Map<String, String> userAndCompanyMap = {...companyMap, ...userMap};
 
-    await _createDocument(
-      userAndCompanyMap: userAndCompanyMap,
-      tplPbId: tplPbId,
-      tplPath: tplLocalPath,
+    await _createDocumentFromRemote(
+      userAndCompanyMap,
+      tplPbId,
+    );
+    await _uploadDocumentToDB(companyData, companyId);
+  }
+
+  Future<void> generateDocumentFromLoacal(
+    String companyId,
+    String tplPath,
+  ) async {
+    final Map<String, dynamic> companyData =
+        await ds.getData(companyId, 'selectForTpl');
+
+    final Map<String, String> companyMap = _createCompanyMap(companyData);
+    final Map<String, dynamic> userMap = await _createUserMap(companyData);
+    final Map<String, String> userAndCompanyMap = {...companyMap, ...userMap};
+
+    await _createDocumentFromLocal(
+      userAndCompanyMap,
+      tplPath,
     );
     await _uploadDocumentToDB(companyData, companyId);
   }

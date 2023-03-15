@@ -36,14 +36,13 @@ class UsersListWidget extends StatelessWidget {
   Future<bool> getUsers() async {
     await ds.getInitData("select");
 
-    String tplId = "2sylungy3q251b9";
-    String tplPath = "assets/templates/tpl.docx";
-    String companyId = "bf2ckhikimw8b34";
+    // String tplId = "2sylungy3q251b9";
+    // String tplPath = "assets/templates/tpl.docx";
+    // String companyId = "bf2ckhikimw8b34";
 
-    final templater = Templater(ds);
-    await templater.generateDocument(companyId: companyId, tplPbId: tplId);
-    // await templater.generateDocument(
-    //     companyId: companyId, tplLocalPath: tplPath);
+    // final templater = Templater(ds);
+    // await templater.generateDocumentFromRemote(companyId, tplId);
+    // await templater.generateDocumentFromLoacal(companyId, tplPath);
 
     return true;
   }
