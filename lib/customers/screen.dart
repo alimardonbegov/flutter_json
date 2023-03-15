@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_js/app/templater.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../app/data_source.dart';
+import '../app/templater.dart';
 import './cubit.dart';
 
 class HomePage extends StatelessWidget {
-  final dataSource = Modular.get<DataSource>();
+  final ds = Modular.get<DataSource>();
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: const Text("Json")),
         body: BlocProvider(
-          create: (_) => ChosenUserCubit(dataSource),
+          create: (_) => ChosenUserCubit(ds),
           child: Row(
             children: <Widget>[
               Expanded(child: UsersListWidget()),
@@ -31,16 +31,19 @@ class HomePage extends StatelessWidget {
 }
 
 class UsersListWidget extends StatelessWidget {
-  final dataSource = Modular.get<DataSource>();
+  final ds = Modular.get<DataSource>();
 
   Future<bool> getUsers() async {
-    await dataSource.getInitData("select");
+    await ds.getInitData("select");
 
     String tplId = "2sylungy3q251b9";
+    String tplPath = "assets/templates/tpl.docx";
     String companyId = "bf2ckhikimw8b34";
 
-    final templater = Templater(dataSource);
-    await templater.generateDocumentFromRemoteTpl(tplId, companyId);
+    final templater = Templater(ds);
+    await templater.generateDocument(companyId: companyId, tplPbId: tplId);
+    // await templater.generateDocument(
+    //     companyId: companyId, tplLocalPath: tplPath);
 
     return true;
   }
@@ -53,9 +56,9 @@ class UsersListWidget extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
-            itemCount: dataSource.usersList.length,
+            itemCount: ds.usersList.length,
             itemBuilder: (context, index) {
-              var item = dataSource.usersList[index];
+              var item = ds.usersList[index];
               return ListTile(
                 leading: Icon(Icons.person),
                 title: Text(item.getStringValue("username")),
@@ -76,7 +79,7 @@ class UsersListWidget extends StatelessWidget {
 }
 
 class ConfigInputsWidget extends StatelessWidget {
-  final dataSource = Modular.get<DataSource>();
+  final ds = Modular.get<DataSource>();
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +100,7 @@ class ConfigInputsWidget extends StatelessWidget {
         } else if (state is ChosenUserCubitStateReady) {
           return SingleChildScrollView(
             child: Column(
-                children: dataSource.config.entries
+                children: ds.config.entries
                     .map((entrie) => InputWidget(
                           initValue: state.data[entrie.key] ?? "",
                           config: entrie.value,

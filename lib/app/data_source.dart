@@ -62,6 +62,7 @@ class PocketBaseDataSource extends DataSource {
         return record.data;
       } catch (e) {
         print("error fetching data by this id: $id");
+        print("error message: ${e}");
       }
     } else {
       print("There is no data");

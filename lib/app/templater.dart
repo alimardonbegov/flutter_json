@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:docxtpl/docxtpl.dart';
-import 'package:pocketbase/pocketbase.dart';
-import 'data_source.dart';
+import './data_source.dart';
 
 class Templater {
   final DataSource ds;
@@ -23,14 +22,28 @@ class Templater {
     return userData["json"];
   }
 
-  Future<void> _createDocumentFromPb(
-      String tplId, Map<String, String> userAndCompanyMap) async {
-    final String fullTplPath = await ds.getDocumentLink(tplId, 'templates');
+  Future<void> _createDocument({
+    required Map<String, String> userAndCompanyMap,
+    String? tplPath,
+    String? tplPbId,
+  }) async {
+    late final String fullTplPath;
+    late final bool isRemoteTpl;
+
+    if (tplPath == null) {
+      fullTplPath = await ds.getDocumentLink(tplPbId!, 'templates');
+      isRemoteTpl = true;
+      print("create document from remote");
+    } else {
+      fullTplPath = tplPath;
+      isRemoteTpl = false;
+      print("create document from local");
+    }
 
     final generator = _TplGenerator(
-      userAndCompanyMap: userAndCompanyMap,
+      userAndCompanyMap: userAndCompanyMap!,
       tplPath: fullTplPath,
-      isRemoteFile: true,
+      isRemoteFile: isRemoteTpl,
     );
     await generator.createDocument();
   }
@@ -48,29 +61,25 @@ class Templater {
     print(link);
   }
 
-  Future<void> generateDocumentFromRemoteTpl(
-    String tplId,
-    String companyId,
-  ) async {
+  Future<void> generateDocument({
+    required String companyId,
+    String? tplPbId,
+    String? tplLocalPath,
+  }) async {
     final Map<String, dynamic> companyData =
         await ds.getData(companyId, 'selectForTpl');
+
     final Map<String, String> companyMap = _createCompanyMap(companyData);
     final Map<String, dynamic> userMap = await _createUserMap(companyData);
     final Map<String, String> userAndCompanyMap = {...companyMap, ...userMap};
 
-    await _createDocumentFromPb(tplId, userAndCompanyMap);
+    await _createDocument(
+      userAndCompanyMap: userAndCompanyMap,
+      tplPbId: tplPbId,
+      tplPath: tplLocalPath,
+    );
     await _uploadDocumentToDB(companyData, companyId);
   }
-
-  // generateDocumentFromLocalTpl(
-  //     Map<String, String> templateData, String tplPath) {
-  //   final TplGenerator _generator = TplGenerator(
-  //     templateData: templateData,
-  //     tplPath: tplPath,
-  //     isRemoteFile: false,
-  //     isAssetFile: true,
-  //   );
-  // }
 }
 
 class _TplGenerator {
@@ -92,7 +101,6 @@ class _TplGenerator {
 
     final response = await docxTpl.parseDocxTpl();
     print(response.mergeStatus);
-    print(response.message);
 
     List<String> fields = docxTpl.getMergeFields();
     Map<String, String> mapFromField = Map.fromIterable(fields);
