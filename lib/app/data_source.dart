@@ -29,7 +29,7 @@ abstract class DataSource {
     String value,
   );
   Future<RecordModel> sentDocumentToDB(
-    File file,
+    List<int> bytes, // File file,
     String userId,
     String companyId,
   );
@@ -95,7 +95,10 @@ class PocketBaseDataSource extends DataSource {
 
   @override
   Future<RecordModel> sentDocumentToDB(
-      File file, String userId, String companyId) async {
+    List<int> bytes, // File file,
+    String userId,
+    String companyId,
+  ) async {
     final record = await pb.collection('documents').create(
       body: {
         "user": userId, //привязываем документ к user
@@ -104,7 +107,7 @@ class PocketBaseDataSource extends DataSource {
       files: [
         http.MultipartFile.fromBytes(
           "document",
-          file.readAsBytesSync(),
+          bytes, // file.readAsBytesSync(),
           filename: "gen.docx",
         )
       ],

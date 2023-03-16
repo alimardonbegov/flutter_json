@@ -7,6 +7,14 @@ class Templater {
 
   Templater(this.ds);
 
+// private common methods:
+  Future<Map<String, dynamic>> _createUserMap(
+      Map<String, dynamic> companyData) async {
+    final String userId = companyData["user_id"];
+    final Map<String, dynamic> userData = await ds.getData(userId, "users");
+    return userData["json"];
+  }
+
   Map<String, String> _createCompanyMap(Map<String, dynamic> companyData) {
     return {
       "COMPANY_NAME": companyData["company_name"],
@@ -15,27 +23,16 @@ class Templater {
     };
   }
 
-  Future<Map<String, dynamic>> _createUserMap(
-      Map<String, dynamic> companyData) async {
-    final String userId = companyData["user_id"];
-    final Map<String, dynamic> userData = await ds.getData(userId, "users");
-    return userData["json"];
+  Future<Map<String, String>> _createUserAndCompanyMap(companyId) async {
+    final Map<String, dynamic> companyData =
+        await ds.getData(companyId, 'selectForTpl');
+    final Map<String, String> companyMap = _createCompanyMap(companyData);
+    final Map<String, dynamic> userMap = await _createUserMap(companyData);
+    return {...companyMap, ...userMap};
   }
 
-  Future<void> _uploadDocumentToDB(
-      Map<String, dynamic> companyData, String companyId) async {
-    final String path = Directory.current.path;
-    final String userId = companyData["user_id"];
-    final file = File("${path}/tpl.docx");
-
-    final record = await ds.sentDocumentToDB(file, userId, companyId);
-    file.deleteSync();
-
-    final String link = await ds.getDocumentLink(record.id, "documents");
-    print(link);
-  }
-
-  Future<void> _createDocumentFromRemote(
+// private unique methods for creating doc(bytes) from remote or local tpl:
+  Future<List<int>> _createDocumentFromRemote(
     Map<String, String> userAndCompanyMap,
     String tplId,
   ) async {
@@ -46,10 +43,11 @@ class Templater {
       tplPath: fullTplPath,
       isRemoteFile: true,
     );
-    await generator.createDocument();
+    List<int> bytes = await generator.createDocument();
+    return bytes;
   }
 
-  Future<void> _createDocumentFromLocal(
+  Future<List<int>> _createDocumentFromLocal(
     Map<String, String> userAndCompanyMap,
     String tplPath,
   ) async {
@@ -58,43 +56,37 @@ class Templater {
       tplPath: tplPath,
       isRemoteFile: false,
     );
-    await generator.createDocument();
+    List<int> bytes = await generator.createDocument();
+    return bytes;
   }
 
-  Future<void> generateDocumentFromRemote(
+// public common method for upload document to data base:
+  Future<String> uploadDocumentToDB(String companyId, List<int> bytes) async {
+    final Map<String, dynamic> companyData =
+        await ds.getData(companyId, 'selectForTpl');
+    final String userId = companyData["user_id"];
+    final record = await ds.sentDocumentToDB(bytes, userId, companyId);
+    final String link = await ds.getDocumentLink(record.id, "documents");
+    return link;
+  }
+
+// public unique methods for generating doc from remote or local tpl:
+  Future<List<int>> generateDocumentFromRemote(
     String companyId,
     String tplPbId,
   ) async {
-    final Map<String, dynamic> companyData =
-        await ds.getData(companyId, 'selectForTpl');
-
-    final Map<String, String> companyMap = _createCompanyMap(companyData);
-    final Map<String, dynamic> userMap = await _createUserMap(companyData);
-    final Map<String, String> userAndCompanyMap = {...companyMap, ...userMap};
-
-    await _createDocumentFromRemote(
-      userAndCompanyMap,
-      tplPbId,
-    );
-    await _uploadDocumentToDB(companyData, companyId);
+    final Map<String, String> map = await _createUserAndCompanyMap(companyId);
+    List<int> bytes = await _createDocumentFromRemote(map, tplPbId);
+    return bytes;
   }
 
-  Future<void> generateDocumentFromLoacal(
+  Future<List<int>> generateDocumentFromLoacal(
     String companyId,
     String tplPath,
   ) async {
-    final Map<String, dynamic> companyData =
-        await ds.getData(companyId, 'selectForTpl');
-
-    final Map<String, String> companyMap = _createCompanyMap(companyData);
-    final Map<String, dynamic> userMap = await _createUserMap(companyData);
-    final Map<String, String> userAndCompanyMap = {...companyMap, ...userMap};
-
-    await _createDocumentFromLocal(
-      userAndCompanyMap,
-      tplPath,
-    );
-    await _uploadDocumentToDB(companyData, companyId);
+    final Map<String, String> map = await _createUserAndCompanyMap(companyId);
+    List<int> bytes = await _createDocumentFromLocal(map, tplPath);
+    return bytes;
   }
 }
 
@@ -109,7 +101,7 @@ class _TplGenerator {
     required this.isRemoteFile,
   });
 
-  Future<void> createDocument() async {
+  Future<List<int>> createDocument() async {
     final DocxTpl docxTpl = DocxTpl(
         docxTemplate: tplPath,
         isRemoteFile: isRemoteFile,
@@ -124,7 +116,12 @@ class _TplGenerator {
 
     if (response.mergeStatus == MergeResponseStatus.Success) {
       await docxTpl.writeMergeFields(data: mapForTpl);
-      await docxTpl.save('tpl.docx');
+      final String path = await docxTpl.save('tpl.docx');
+      final file = File(path);
+      final List<int> bytes = file.readAsBytesSync();
+      file.deleteSync();
+      return bytes;
     }
+    return [];
   }
 }
