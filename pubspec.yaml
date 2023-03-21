@@ -15,9 +15,11 @@ dependencies:
   flutter_modular: any
   flutter_bloc: ^8.0.0
   bloc: ^8.0.0
-  docx_template: ^0.3.3
   docxtpl:
     path: ../docxtpl
+  googleapis_auth: ^1.4.0
+  googleapis: any
+  google_sign_in: ^6.0.2
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +31,4 @@ flutter:
   assets:
     - assets/configs/
     - assets/templates/
+    - assets/google_json.json

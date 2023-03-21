@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+
+// import 'dart:async';
+// import 'dart:io';
+// import 'package:http/http.dart' as http;
+// import 'package:googleapis_auth/auth_io.dart' as auth;
+// import 'package:googleapis/drive/v3.dart' as drive;
+// import 'package:google_sign_in/google_sign_in.dart';
+
+// import '../app/google_api.dart';
+// import '../app/templater.dart';
 import '../app/data_source.dart';
-import '../app/templater.dart';
 import './cubit.dart';
 
 class HomePage extends StatelessWidget {
@@ -34,31 +43,32 @@ class UsersListWidget extends StatelessWidget {
   final ds = Modular.get<DataSource>();
 
   Future<bool> getUsers() async {
-    await ds.getInitData("select");
+    await ds.getInitData("selectInit");
+    // await GoogleSignInApi.login();
 
-    String tplId = "2sylungy3q251b9";
-    String tplPath = "assets/templates/tpl.docx";
-    String companyId = "bf2ckhikimw8b34";
+    // String tplId = "xwshzdift79mk6n";
+    // String tplPath = "assets/templates/tpl.docx";
+    // String companyId = "f6tt406qe0fu7q2";
 
-    final templater = Templater(ds);
-    //! generate doc from remote example
-    // final List<int> bytes =
-    //     await templater.generateDocumentFromRemote(companyId, tplId);
-    // final String linkToDocument =
-    //     await templater.uploadDocumentToDB(companyId, bytes);
+    // final templater = Templater(ds);
+
+    // ! generate doc from remote example
+
+    // final List<int> bytes = await templater.generateDocumentFromRemote(companyId, tplId);
+    // final String linkToDocument = await templater.uploadDocumentToDB(companyId, bytes);
 
     //! generate doc from local example
-    final List<int> bytes =
-        await templater.generateDocumentFromLoacal(companyId, tplPath);
-    final String linkToDocument =
-        await templater.uploadDocumentToDB(companyId, bytes);
-    print("linkToDocument is: $linkToDocument");
+    // final List<int> bytes = await templater.generateDocumentFromLoacal(companyId, tplPath);
+    // final String linkToDocument = await templater.uploadDocumentToDB(companyId, bytes);
+    // print("linkToDocument is: $linkToDocument");
 
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
+    final ds = Modular.get<DataSource>();
+
     final cubit = BlocProvider.of<ChosenUserCubit>(context);
     return FutureBuilder(
       future: getUsers(),

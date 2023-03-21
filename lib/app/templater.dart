@@ -8,8 +8,7 @@ class Templater {
   Templater(this.ds);
 
 // private common methods:
-  Future<Map<String, dynamic>> _createUserMap(
-      Map<String, dynamic> companyData) async {
+  Future<Map<String, dynamic>> _createUserMap(Map<String, dynamic> companyData) async {
     final String userId = companyData["user_id"];
     final Map<String, dynamic> userData = await ds.getData(userId, "users");
     return userData["json"];
@@ -24,8 +23,7 @@ class Templater {
   }
 
   Future<Map<String, String>> _createUserAndCompanyMap(companyId) async {
-    final Map<String, dynamic> companyData =
-        await ds.getData(companyId, 'selectForTpl');
+    final Map<String, dynamic> companyData = await ds.getData(companyId, 'selectForTpl');
     final Map<String, String> companyMap = _createCompanyMap(companyData);
     final Map<String, dynamic> userMap = await _createUserMap(companyData);
     return {...companyMap, ...userMap};
@@ -43,7 +41,9 @@ class Templater {
       tplPath: fullTplPath,
       isRemoteFile: true,
     );
+
     List<int> bytes = await generator.createDocument();
+
     return bytes;
   }
 
@@ -62,8 +62,7 @@ class Templater {
 
 // public common method for upload document to data base:
   Future<String> uploadDocumentToDB(String companyId, List<int> bytes) async {
-    final Map<String, dynamic> companyData =
-        await ds.getData(companyId, 'selectForTpl');
+    final Map<String, dynamic> companyData = await ds.getData(companyId, 'selectForTpl');
     final String userId = companyData["user_id"];
     final record = await ds.sentDocumentToDB(bytes, userId, companyId);
     final String link = await ds.getDocumentLink(record.id, "documents");
@@ -102,10 +101,7 @@ class _TplGenerator {
   });
 
   Future<List<int>> createDocument() async {
-    final DocxTpl docxTpl = DocxTpl(
-        docxTemplate: tplPath,
-        isRemoteFile: isRemoteFile,
-        isAssetFile: !isRemoteFile);
+    final DocxTpl docxTpl = DocxTpl(docxTemplate: tplPath, isAssetFile: !isRemoteFile, isRemoteFile: isRemoteFile);
 
     final response = await docxTpl.parseDocxTpl();
     print(response.mergeStatus);
