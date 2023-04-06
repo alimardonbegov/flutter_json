@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
-// import 'dart:async';
-// import 'dart:io';
-// import 'package:http/http.dart' as http;
-// import 'package:googleapis_auth/auth_io.dart' as auth;
-// import 'package:googleapis/drive/v3.dart' as drive;
-// import 'package:google_sign_in/google_sign_in.dart';
-
-// import '../app/google_api.dart';
 import '../app/templater.dart';
 import '../app/data_source.dart';
 import './cubit.dart';
@@ -44,23 +35,20 @@ class UsersListWidget extends StatelessWidget {
 
   Future<bool> getUsers() async {
     await ds.getInitData("selectInit");
-    // await GoogleSignInApi.login();
 
+    // ! TEMPLATOR
     String tplId = "xwshzdift79mk6n";
     String tplPath = "assets/templates/tpl.docx";
     String companyId = "f6tt406qe0fu7q2";
 
     final templater = Templater(ds);
 
-    // ! generate doc from remote example
+    print(1.1);
+    final List<int> bytes = await templater.generateDoc(companyId, tplId);
+    print(1.2);
+    final String linkToDoc = await templater.uploadDocToDB(companyId, bytes);
 
-    final List<int> bytes = await templater.generateDocumentFromRemote(companyId, tplId);
-    final String linkToDocument = await templater.uploadDocumentToDB(companyId, bytes);
-
-    //! generate doc from local example
-    // final List<int> bytes = await templater.generateDocumentFromLoacal(companyId, tplPath);
-    // final String linkToDocument = await templater.uploadDocumentToDB(companyId, bytes);
-    print("linkToDocument is: $linkToDocument");
+    print(linkToDoc);
 
     return true;
   }

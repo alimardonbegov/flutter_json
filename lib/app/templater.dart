@@ -1,5 +1,5 @@
-import 'dart:io';
-import 'package:docxtpl/docxtpl.dart';
+import 'package:pocketbase/pocketbase.dart';
+import 'package:tpl_docx/tpl_docx.dart';
 import './data_source.dart';
 
 class Templater {
@@ -7,7 +7,6 @@ class Templater {
 
   Templater(this.ds);
 
-// private common methods:
   Future<Map<String, dynamic>> _createUserMap(Map<String, dynamic> companyData) async {
     final String userId = companyData["user_id"];
     final Map<String, dynamic> userData = await ds.getData(userId, "users");
@@ -29,95 +28,29 @@ class Templater {
     return {...companyMap, ...userMap};
   }
 
-// private unique methods for creating doc(bytes) from remote or local tpl:
-  Future<List<int>> _createDocumentFromRemote(
-    Map<String, String> userAndCompanyMap,
-    String tplId,
-  ) async {
-    final String fullTplPath = await ds.getDocumentLink(tplId, 'templates');
+  Future<List<int>> generateDoc(String tplId, String companyId) async {
+    print(2.1);
+    final String fullTplPath = await ds.getDocLink(tplId, 'templates');
+    print(2.2);
+    final List<int> bytes = await ds.getDocBytes(fullTplPath);
+    print(2.3);
 
-    final generator = _TplGenerator(
-      userAndCompanyMap: userAndCompanyMap,
-      tplPath: fullTplPath,
-      isRemoteFile: true,
-    );
+    final tpl = TplDocx(bytes);
+    final List<String> fields = tpl.mergedFields;
 
-    List<int> bytes = await generator.createDocument();
+    final Map<String, String> userAndCompanyMap = await _createUserAndCompanyMap(companyId);
+    final Map<String, String> mapFromField = Map.fromIterable(fields);
+    final Map<String, String> mapForTpl = {...mapFromField, ...userAndCompanyMap};
 
-    return bytes;
+    tpl.writeMergedFields(mapForTpl);
+    return tpl.getGeneratedBytes()!;
   }
 
-  Future<List<int>> _createDocumentFromLocal(
-    Map<String, String> userAndCompanyMap,
-    String tplPath,
-  ) async {
-    final generator = _TplGenerator(
-      userAndCompanyMap: userAndCompanyMap,
-      tplPath: tplPath,
-      isRemoteFile: false,
-    );
-    List<int> bytes = await generator.createDocument();
-    return bytes;
-  }
-
-// public common method for upload document to data base:
-  Future<String> uploadDocumentToDB(String companyId, List<int> bytes) async {
+  Future<String> uploadDocToDB(String companyId, List<int> bytes) async {
     final Map<String, dynamic> companyData = await ds.getData(companyId, 'selectForTpl');
     final String userId = companyData["user_id"];
-    final record = await ds.sentDocumentToDB(bytes, userId, companyId);
-    final String link = await ds.getDocumentLink(record.id, "documents");
+    final RecordModel record = await ds.sentDocToDB(bytes, userId, companyId);
+    final String link = await ds.getDocLink(record.id, "documents");
     return link;
-  }
-
-// public unique methods for generating doc from remote or local tpl:
-  Future<List<int>> generateDocumentFromRemote(
-    String companyId,
-    String tplPbId,
-  ) async {
-    final Map<String, String> map = await _createUserAndCompanyMap(companyId);
-    List<int> bytes = await _createDocumentFromRemote(map, tplPbId);
-    return bytes;
-  }
-
-  Future<List<int>> generateDocumentFromLoacal(
-    String companyId,
-    String tplPath,
-  ) async {
-    final Map<String, String> map = await _createUserAndCompanyMap(companyId);
-    List<int> bytes = await _createDocumentFromLocal(map, tplPath);
-    return bytes;
-  }
-}
-
-class _TplGenerator {
-  final Map<String, String> userAndCompanyMap;
-  final String tplPath;
-  final bool isRemoteFile;
-
-  _TplGenerator({
-    required this.userAndCompanyMap,
-    required this.tplPath,
-    required this.isRemoteFile,
-  });
-
-  Future<List<int>> createDocument() async {
-    final DocxTpl docxTpl = DocxTpl(docxTemplate: tplPath, isAssetFile: !isRemoteFile, isRemoteFile: isRemoteFile);
-
-    final response = await docxTpl.parseDocxTpl();
-    print(response.mergeStatus);
-
-    List<String> fields = docxTpl.getMergeFields();
-    Map<String, String> mapFromField = Map.fromIterable(fields);
-    Map<String, String> mapForTpl = {...mapFromField, ...userAndCompanyMap};
-
-    if (response.mergeStatus == MergeResponseStatus.Success) {
-      await docxTpl.writeMergeFields(data: mapForTpl);
-      final String path = await docxTpl.save('tpl.docx');
-      final file = File(path);
-      final List<int> bytes = file.readAsBytesSync();
-      file.deleteSync();
-      return bytes;
-    }
-    return [];
   }
 }

@@ -1,6 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_js/private/google.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+
+import 'package:googleapis/oauth2/v2.dart';
+import 'package:googleapis/oauth2/v2.dart' as oauth2;
+import 'package:http/http.dart' as http;
+
+import 'package:googleapis/oauth2/v2.dart';
 
 void main() async {
   runner();
@@ -40,11 +48,43 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   Future onPressed() async {
-    // await GoogleSignInApi.login();
+    final clientId = googleDesktopId;
+    final clientSecret = googleDesktopSecred;
+    final redirectUri = '????';
+
+    final authorizationCode = '???';
+
+    // final tokenEndpoint = oauth2.Oauth2ApitokenEndpoint.toString();
+
+    // final requestBody = {
+    //   'code': authorizationCode,
+    //   'client_id': clientId,
+    //   'client_secret': clientSecret,
+    //   'redirect_uri': redirectUri,
+    //   'grant_type': 'authorization_code',
+    // };
+
+    // final response = await http.post(Uri.parse(tokenEndpoint),
+    //     headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: requestBody);
+
+    // if (response.statusCode == 200) {
+    //   final jsonResponse = jsonDecode(response.body);
+    //   final accessToken = jsonResponse['access_token'];
+    //   final expiresIn = jsonResponse['expires_in'];
+    //   final tokenType = jsonResponse['token_type'];
+    //   final refreshToken = jsonResponse['refresh_token'];
+
+    //   // Use the access token to make requests to the API
+    //   // ...
+    // } else {
+    //   throw Exception('Failed to exchange authorization code for access token.');
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
+   
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData.dark(),

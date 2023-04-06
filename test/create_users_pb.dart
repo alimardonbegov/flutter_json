@@ -1,9 +1,9 @@
+import 'package:flutter_js/private/private_pb.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 void main() async {
   final pb = PocketBase('https://app.advanture.me');
-  final authData =
-      await pb.admins.authWithPassword('alimardon007@gmail.com', '5544332211');
+  final authData = await pb.admins.authWithPassword(login, pass);
 
   Future<void> createRecord(int number) async {
     final body = <String, dynamic>{

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 abstract class DataSource {
@@ -20,19 +21,13 @@ abstract class DataSource {
 
   Future<Map<String, dynamic>> getData(String id, String collectionName);
 
-  Future<String> getDocumentLink(String docId, String collectionName);
+  Future<String> getDocLink(String docId, String collectionName);
 
-  Future<void> updateData(
-    String id,
-    Map<String, dynamic> jsonItem,
-    String key,
-    String value,
-  );
-  Future<RecordModel> sentDocumentToDB(
-    List<int> bytes, // File file,
-    String userId,
-    String companyId,
-  );
+  Future<void> updateData(String id, Map<String, dynamic> jsonItem, String key, String value);
+
+  Future<RecordModel> sentDocToDB(List<int> bytes, String userId, String companyId);
+
+  Future<List<int>> getDocBytes(String docPath);
 }
 
 // ! POCKET BASE
@@ -41,8 +36,7 @@ class PocketBaseDataSource extends DataSource {
 
   @override
   Future<void> getInitData(collectionName) async {
-    final List<dynamic> recordsUsers =
-        await pb.collection(collectionName).getFullList();
+    final List<dynamic> recordsUsers = await pb.collection(collectionName).getFullList();
     _usersList = recordsUsers;
 
     final String response = await rootBundle.loadString(configPath);
@@ -71,10 +65,12 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<String> getDocumentLink(String docId, String collectionName) async {
-    final RecordModel recordTpl =
-        await pb.collection(collectionName).getOne(docId);
+  Future<String> getDocLink(String docId, String collectionName) async {
+    print(3.1);
+    final RecordModel recordTpl = await pb.collection(collectionName).getOne(docId);
+    print(3.2);
     final String fileName = recordTpl.getListValue<String>('document')[0];
+    print(3.3);
     return pb.getFileUrl(recordTpl, fileName).toString();
   }
 
@@ -94,28 +90,38 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<RecordModel> sentDocumentToDB(
-    List<int> bytes, // File file,
+  Future<RecordModel> sentDocToDB(
+    List<int> bytes,
     String userId,
     String companyId,
   ) async {
     final record = await pb.collection('documents').create(
       body: {
-        "user": userId, //привязываем документ к user
-        "company": companyId, //привязываем документ к company
+        "user": userId, //связываем документ с user
+        "company": companyId, //привясвязываемзываем документ с company
       },
       files: [
         http.MultipartFile.fromBytes(
           "document",
-          bytes, // file.readAsBytesSync(),
+          bytes,
           filename: "gen.docx",
         )
       ],
     );
     return record;
   }
-}
 
+  @override
+  Future<List<int>> getDocBytes(String docPath) async {
+    try {
+      final Client client = Client();
+      final Response req = await client.get(Uri.parse(docPath));
+      return req.bodyBytes;
+    } catch (e) {
+      throw Exception('error downloading remote .docx template file: ' + e.toString());
+    }
+  }
+}
 
 // ! LOCAL
 // class LocalDataSource extends DataSource {
@@ -153,8 +159,16 @@ class PocketBaseDataSource extends DataSource {
 
 //   @override
 //   Future<void> getInitData() async {}
+//
+// Future<List<int>> _getDocBytesFromLocal(String docPath) async {
+//   try {
+//     final file = File(docPath);
+//     return file.readAsBytesSync();
+//   } catch (e) {
+//     throw Exception('error downloading local .docx template file: ' + e.toString());
+//   }
 // }
-
+// }
 
 // ! HTTP
 // class HttpDataSource extends DataSource {
@@ -198,5 +212,3 @@ class PocketBaseDataSource extends DataSource {
 //   @override
 //   Future<void> getInitData() async {}
 // }
-
-
