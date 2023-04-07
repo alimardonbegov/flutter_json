@@ -36,11 +36,9 @@ class UsersListWidget extends StatelessWidget {
   final ds = Modular.get<DataSource>();
 
   Future<bool> getUsers() async {
-    print(1.1);
-
     await ds.getInitData("selectInit");
 
-    // // ! TEMPLATOR
+    // ! TEMPLATOR
     // String tplId = "xwshzdift79mk6n";
     // String tplPath = "assets/templates/tpl.docx";
     // String companyId = "f6tt406qe0fu7q2";
@@ -51,7 +49,6 @@ class UsersListWidget extends StatelessWidget {
     // final String linkToDoc = await templater.uploadDocToDB(companyId, bytes);
 
     // print(linkToDoc);
-    print(1.2);
 
     return true;
   }
