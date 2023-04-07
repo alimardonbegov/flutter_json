@@ -1,7 +1,0 @@
-{
-    "DD_MM_YYYY": {
-        "title": "date on document",
-        "exampleOfFilling": "07.03.2023",
-        "hint": "Fill date of the document"
-    }
-}

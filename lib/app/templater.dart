@@ -29,11 +29,8 @@ class Templater {
   }
 
   Future<List<int>> generateDoc(String tplId, String companyId) async {
-    print(2.1);
     final String fullTplPath = await ds.getDocLink(tplId, 'templates');
-    print(2.2);
     final List<int> bytes = await ds.getDocBytes(fullTplPath);
-    print(2.3);
 
     final tpl = TplDocx(bytes);
     final List<String> fields = tpl.mergedFields;
@@ -49,8 +46,10 @@ class Templater {
   Future<String> uploadDocToDB(String companyId, List<int> bytes) async {
     final Map<String, dynamic> companyData = await ds.getData(companyId, 'selectForTpl');
     final String userId = companyData["user_id"];
+
     final RecordModel record = await ds.sentDocToDB(bytes, userId, companyId);
     final String link = await ds.getDocLink(record.id, "documents");
+
     return link;
   }
 }

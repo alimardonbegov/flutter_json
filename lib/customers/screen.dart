@@ -43,9 +43,7 @@ class UsersListWidget extends StatelessWidget {
 
     final templater = Templater(ds);
 
-    print(1.1);
-    final List<int> bytes = await templater.generateDoc(companyId, tplId);
-    print(1.2);
+    final List<int> bytes = await templater.generateDoc(tplId, companyId);
     final String linkToDoc = await templater.uploadDocToDB(companyId, bytes);
 
     print(linkToDoc);

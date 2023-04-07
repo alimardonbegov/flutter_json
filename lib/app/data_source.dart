@@ -66,11 +66,8 @@ class PocketBaseDataSource extends DataSource {
 
   @override
   Future<String> getDocLink(String docId, String collectionName) async {
-    print(3.1);
     final RecordModel recordTpl = await pb.collection(collectionName).getOne(docId);
-    print(3.2);
     final String fileName = recordTpl.getListValue<String>('document')[0];
-    print(3.3);
     return pb.getFileUrl(recordTpl, fileName).toString();
   }
 

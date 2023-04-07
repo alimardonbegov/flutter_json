@@ -1,17 +1,49 @@
 {
-    "COMPANY_DIRECTOR": {
-        "title": "Director name",
-        "exampleOfFilling": "Ivanov Ivan",
-        "hint": "Fill the surname and name from passport"
-    },
-    "COMPANY_NAME": {
-        "title": "company name",
-        "exampleOfFilling": "Achiever",
-        "hint": "Fill the company name"
-    },
-    "COMPANY_PIB": {
-        "title": "company PIB",
-        "exampleOfFilling": "Ivanov",
-        "hint": "Fill the company PIB"
-    }
+  "COM_NAME": {
+    "rus": ["название компании", "Achiever", "введите название компании"],
+    "cnr": ["", "Achiever", ""],
+    "eng": ["company name", "Achiever", "Fill the company name"]
+  },
+
+  "COM_OPSTINA": {
+    "rus": ["општина компании", "Бар", "введите название обштины"],
+    "cnr": ["", "", ""],
+    "eng": ["", "", ""]
+  },
+
+  "COM_ADDR": {
+    "rus": ["юридический адрес", "Бар", "введите юридический адрес компании"],
+    "cnr": ["", "", ""],
+    "eng": ["legal address", "", "enter the legal address of the company"]
+  },
+
+  "COM_EMAIL": {
+    "rus": ["официальная электронная почта", "email@email.com", "введите адрес электронной почты компании"],
+    "cnr": ["", "", ""],
+    "eng": ["company email", "email@email.com", "enter the company email"]
+  },
+
+  "COM_PHONE": {
+    "rus": ["телефон компании", "+382 68 999 999", "введите номер телефона компании"],
+    "cnr": ["", "", ""],
+    "eng": ["company phone", "+382 68 999 999", "enter the company phone number"]
+  },
+
+  "COM_BROJ": {
+    "rus": ["регистрационный номер", "", "введите регистрационный номер компании (BROJ)"],
+    "cnr": ["", "", ""],
+    "eng": ["", "", ""]
+  },
+
+  "COM_PIB": {
+    "rus": ["налоговый номер", "", "введите налоговый номер компании (PIB)"],
+    "cnr": ["", "", ""],
+    "eng": ["company PIB", "", "Fill the company PIB"]
+  },
+
+  "COM_DIRECTOR": {
+    "rus": ["", "", ""],
+    "cnr": ["", "", ""],
+    "eng": ["director name", "Ivanov Ivan", "Fill the surname and name from passport"]
+  }
 }

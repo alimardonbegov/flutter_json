@@ -1,0 +1,18 @@
+{
+  "CITY_U": {
+    "rus": ["", "", ""],
+    "cnr": ["", "", ""],
+    "eng": ["", "", ""]
+  },
+  "DD_MM_YYYY": {
+    "rus": ["дата документа", "01.05.2023", "Заполните дату документа"],
+    "cnr": ["", "", ""],
+    "eng": ["date of the document", "01.05.2023", "fill the date of the document"]
+  },
+
+  "PASOS_BROJ": {
+    "rus": ["номер паспорта", "7766 555444", "введите номер паспорта"],
+    "cnr": ["", "", ""],
+    "eng": ["passport number", "7766 555444", "enter the passport number"]
+  }
+}
