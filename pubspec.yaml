@@ -16,7 +16,6 @@ dependencies:
   flutter_bloc: ^8.0.0
   bloc: ^8.0.0
   tpl_docx:
-    # path: ../custom_docx_templater
     path: ../tpl_for_docx
     # git: https://github.com/alimardonbegov/docxtpl
   googleapis: ^10.1.0
@@ -31,4 +30,3 @@ flutter:
   assets:
     - assets/configs/
     - assets/templates/
-    - assets/google_json.json

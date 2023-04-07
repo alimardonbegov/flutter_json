@@ -111,7 +111,7 @@ class ConfigInputsWidget extends StatelessWidget {
             child: Column(
                 children: ds.config.entries
                     .map((entrie) => InputWidget(
-                          // initValue: state.data[entrie.key] ?? "",
+                          initValue: state.data[entrie.key] ?? "",
                           config: entrie.value,
                           onStopEditing: cubit.updateUserData,
                           id: state.id,
@@ -131,7 +131,7 @@ class ConfigInputsWidget extends StatelessWidget {
 /// input rendering from config_user
 
 class InputWidget extends StatelessWidget {
-  // final String initValue;
+  final String initValue;
   final String id;
   final String keyMap;
   final Map<String, List<String>> config;
@@ -140,13 +140,13 @@ class InputWidget extends StatelessWidget {
 
   InputWidget({
     super.key,
-    // required this.initValue,
+    required this.initValue,
     required this.config,
     required this.onStopEditing,
     required this.id,
     required this.keyMap,
   }) {
-    // _controller.text = initValue ?? "";
+    _controller.text = initValue ?? "";
   }
 
   @override
@@ -157,7 +157,7 @@ class InputWidget extends StatelessWidget {
             labelText: config["eng"]![0],
             hintText: config["eng"]![1],
           ),
-          // controller: _controller,
+          controller: _controller,
         ),
         onFocusChange: (hasFocus) {
           if (hasFocus) return;

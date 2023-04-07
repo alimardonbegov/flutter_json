@@ -20,8 +20,8 @@
     "eng": ["email", "ivan@example.com", "Enter email address"]
   },
   "CLIENT_PHONE": {
-    "rus": ["", "", ""],
+    "rus": ["номер телефона", "+382 68 000 000", "введите номер телефона"],
     "cnr": ["", "", ""],
-    "eng": ["", "", ""]
+    "eng": ["phone", "+382 68 000 000", "Enter phone number"]
   }
 }

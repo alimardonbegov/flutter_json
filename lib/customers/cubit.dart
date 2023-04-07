@@ -11,15 +11,11 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
     if (state.id == id) return;
     emit(ChosenUserCubitStateLoading());
 
+    final Map<String, dynamic> jsonData = await ds.getData(id, "users");
     Map<String, dynamic> jsonItem;
 
-    final Map<String, dynamic> jsonData = await ds.getData(id, "users");
-    if (jsonData["json"] == null) {
-      jsonItem = {};
-    } else {
-      jsonItem = jsonData["json"];
-    }
-    // final Map<String, dynamic> jsonItem = jsonData["json"];
+    jsonData["json"] == null ? jsonItem = {} : jsonItem = jsonData["json"];
+
     try {
       emit(ChosenUserCubitStateReady(jsonItem, id));
     } catch (e) {
