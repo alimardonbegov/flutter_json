@@ -28,7 +28,7 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
 abstract class ChosenUserCubitState {
   final Map<String, dynamic> data;
   final String id;
-  ChosenUserCubitState(this.data, this.id);
+  const ChosenUserCubitState(this.data, this.id);
 }
 
 class ChosenUserCubitStateInit extends ChosenUserCubitState {

@@ -30,23 +30,28 @@ class HomePage extends StatelessWidget {
   }
 }
 
+/// left part of screen - rendering list of users
+
 class UsersListWidget extends StatelessWidget {
   final ds = Modular.get<DataSource>();
 
   Future<bool> getUsers() async {
+    print(1.1);
+
     await ds.getInitData("selectInit");
 
-    // ! TEMPLATOR
-    String tplId = "xwshzdift79mk6n";
-    String tplPath = "assets/templates/tpl.docx";
-    String companyId = "f6tt406qe0fu7q2";
+    // // ! TEMPLATOR
+    // String tplId = "xwshzdift79mk6n";
+    // String tplPath = "assets/templates/tpl.docx";
+    // String companyId = "f6tt406qe0fu7q2";
 
-    final templater = Templater(ds);
+    // final templater = Templater(ds);
 
-    final List<int> bytes = await templater.generateDoc(tplId, companyId);
-    final String linkToDoc = await templater.uploadDocToDB(companyId, bytes);
+    // final List<int> bytes = await templater.generateDoc(tplId, companyId);
+    // final String linkToDoc = await templater.uploadDocToDB(companyId, bytes);
 
-    print(linkToDoc);
+    // print(linkToDoc);
+    print(1.2);
 
     return true;
   }
@@ -54,8 +59,8 @@ class UsersListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ds = Modular.get<DataSource>();
-
     final cubit = BlocProvider.of<ChosenUserCubit>(context);
+
     return FutureBuilder(
       future: getUsers(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
@@ -83,6 +88,8 @@ class UsersListWidget extends StatelessWidget {
   }
 }
 
+/// right part of screen - rendering list of user's field (from config_user)
+
 class ConfigInputsWidget extends StatelessWidget {
   final ds = Modular.get<DataSource>();
 
@@ -107,7 +114,7 @@ class ConfigInputsWidget extends StatelessWidget {
             child: Column(
                 children: ds.config.entries
                     .map((entrie) => InputWidget(
-                          initValue: state.data[entrie.key] ?? "",
+                          // initValue: state.data[entrie.key] ?? "",
                           config: entrie.value,
                           onStopEditing: cubit.updateUserData,
                           id: state.id,
@@ -124,23 +131,25 @@ class ConfigInputsWidget extends StatelessWidget {
   }
 }
 
+/// input rendering from config_user
+
 class InputWidget extends StatelessWidget {
-  final String initValue;
+  // final String initValue;
   final String id;
   final String keyMap;
-  final Map<String, String> config;
+  final Map<String, List<String>> config;
   final Function onStopEditing;
   final TextEditingController _controller = TextEditingController();
 
   InputWidget({
     super.key,
-    required this.initValue,
+    // required this.initValue,
     required this.config,
     required this.onStopEditing,
     required this.id,
     required this.keyMap,
   }) {
-    _controller.text = initValue ?? "";
+    // _controller.text = initValue ?? "";
   }
 
   @override
@@ -148,10 +157,10 @@ class InputWidget extends StatelessWidget {
     return Focus(
         child: TextFormField(
           decoration: InputDecoration(
-            labelText: config["title"],
-            hintText: config["hint"],
+            labelText: config["eng"]![0],
+            hintText: config["eng"]![1],
           ),
-          controller: _controller,
+          // controller: _controller,
         ),
         onFocusChange: (hasFocus) {
           if (hasFocus) return;

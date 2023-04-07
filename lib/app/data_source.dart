@@ -11,8 +11,8 @@ abstract class DataSource {
 
   DataSource(this.pb, this.configPath);
 
-  late final Map<String, Map<String, String>> _config;
-  Map<String, Map<String, String>> get config => _config;
+  late final Map<String, Map<String, List<String>>> _config;
+  Map<String, Map<String, List<String>>> get config => _config;
 
   late final List<dynamic> _usersList;
   List<dynamic> get usersList => _usersList;
@@ -41,10 +41,15 @@ class PocketBaseDataSource extends DataSource {
 
     final String response = await rootBundle.loadString(configPath);
     final jsonConfigParsed = await json.decode(response);
-    final Map<String, Map<String, String>> finalMapFromJson = {};
+    final Map<String, Map<String, List<String>>> finalMapFromJson = {};
+
     jsonConfigParsed.forEach((key, value) {
-      finalMapFromJson[key] = value.cast<String, String>();
+      final Map<String, dynamic> valueMap = Map<String, dynamic>.from(value);
+      finalMapFromJson[key] = valueMap.map((k, v) => MapEntry(k, List<String>.from(v)));
     });
+
+    // print(jsonConfigParsed["CLIENT_IME"]["eng"][2]);
+
     _config = finalMapFromJson;
   }
 
