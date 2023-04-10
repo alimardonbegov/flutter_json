@@ -1,0 +1,346 @@
+[
+  {
+    "id": "4ibzvdlnt6ydru6",
+    "name": "users",
+    "type": "auth",
+    "system": false,
+    "schema": [
+      {
+        "id": "ukz7udpj",
+        "name": "json",
+        "type": "json",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {}
+      },
+      {
+        "id": "azsdmied",
+        "name": "company",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "collectionId": "8gto1ba3r4xt2hx",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      }
+    ],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {
+      "allowEmailAuth": true,
+      "allowOAuth2Auth": true,
+      "allowUsernameAuth": true,
+      "exceptEmailDomains": null,
+      "manageRule": null,
+      "minPasswordLength": 8,
+      "onlyEmailDomains": null,
+      "requireEmail": false
+    }
+  },
+  {
+    "id": "8gto1ba3r4xt2hx",
+    "name": "companies",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "xzkyi3yb",
+        "name": "json",
+        "type": "json",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {}
+      },
+      {
+        "id": "a7on29i4",
+        "name": "user_id",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "collectionId": "4ibzvdlnt6ydru6",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": [
+            "id",
+            "username"
+          ]
+        }
+      },
+      {
+        "id": "ta512wex",
+        "name": "company_name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "ollszkqr",
+        "name": "company_pib",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "unique": true,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "d59avglhy9y5wq1",
+    "name": "templates",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "te4dwn7t",
+        "name": "document",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "kbao7e3p",
+        "name": "templateName",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "unique": true,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "vz4rlf3w",
+        "name": "config",
+        "type": "json",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {}
+      }
+    ],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "8o7ybwi2og9cl63",
+    "name": "documents",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "sy26twus",
+        "name": "document",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "krbdmcxk",
+        "name": "user",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "collectionId": "4ibzvdlnt6ydru6",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": [
+            "id",
+            "username"
+          ]
+        }
+      },
+      {
+        "id": "hqvlgnbd",
+        "name": "company",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "collectionId": "8gto1ba3r4xt2hx",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": [
+            "id",
+            "company_name"
+          ]
+        }
+      }
+    ],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "rkoaw4s6adwpefy",
+    "name": "selectInit",
+    "type": "view",
+    "system": false,
+    "schema": [
+      {
+        "id": "hzxvuaih",
+        "name": "username",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "sxydglyx",
+        "name": "email",
+        "type": "email",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "exceptDomains": null,
+          "onlyDomains": null
+        }
+      },
+      {
+        "id": "azsdmied",
+        "name": "company",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "collectionId": "8gto1ba3r4xt2hx",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      }
+    ],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {
+      "query": "SELECT id, username, email, company from users"
+    }
+  },
+  {
+    "id": "0w0wlvhnlz8pmyp",
+    "name": "selectForTpl",
+    "type": "view",
+    "system": false,
+    "schema": [
+      {
+        "id": "a7on29i4",
+        "name": "user_id",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "collectionId": "4ibzvdlnt6ydru6",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": [
+            "id",
+            "username"
+          ]
+        }
+      },
+      {
+        "id": "ta512wex",
+        "name": "company_name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "ollszkqr",
+        "name": "company_pib",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "unique": true,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {
+      "query": "SELECT id, user_id, company_name, company_pib FROM companies;"
+    }
+  }
+]

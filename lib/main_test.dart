@@ -1,14 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_js/private/google.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'package:googleapis/oauth2/v2.dart';
-import 'package:googleapis/oauth2/v2.dart' as oauth2;
 import 'package:http/http.dart' as http;
-
-import 'package:googleapis/oauth2/v2.dart';
 
 void main() async {
   runner();
@@ -48,8 +43,6 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   Future onPressed() async {
-    final clientId = googleDesktopId;
-    final clientSecret = googleDesktopSecred;
     final redirectUri = '????';
 
     final authorizationCode = '???';
@@ -83,8 +76,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData.dark(),
