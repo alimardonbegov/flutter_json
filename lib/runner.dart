@@ -4,7 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
 import './app/data_source.dart';
 import './main.dart';
-import './customers/screen.dart';
+import 'customers/screen.dart';
 
 void runner() async {
   FlutterError.onError = (FlutterErrorDetails details) {
