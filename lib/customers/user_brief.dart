@@ -5,6 +5,19 @@ class UserBriefWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return SizedBox(
+      height: 100,
+      child: Row(
+        children: const <Widget>[
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.photo),
+              title: Text('{name} {surname}'),
+              subtitle: Text('{company name}'),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

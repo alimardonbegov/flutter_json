@@ -22,7 +22,10 @@ class HomePage extends StatelessWidget {
           child: Row(
             children: [
               SizedBox(width: 400, child: UsersListWidget()),
-              Container(width: 2, color: Colors.black),
+              Container(
+                width: 2,
+                color: Colors.black,
+              ),
               Expanded(child: UserDataWidget()),
             ],
           ),

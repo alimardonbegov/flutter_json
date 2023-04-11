@@ -8,6 +8,8 @@ import 'user_brief.dart';
 class UserDataWidget extends StatelessWidget {
   final ds = Modular.get<DataSource>();
 
+  UserDataWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     final cubit = BlocProvider.of<ChosenUserCubit>(context);
@@ -27,8 +29,75 @@ class UserDataWidget extends StatelessWidget {
         } else if (state is ChosenUserCubitStateReady) {
           return Column(
             children: [
-              SizedBox(height: 200, child: UserBriefWidget()),
-              Container(height: 2, color: Colors.black),
+              SizedBox(
+                height: 250,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Card(
+                        child: Column(
+                          children: const <Widget>[
+                            ListTile(
+                              title: Text(
+                                '{name} {surname}',
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                              subtitle: Text(
+                                '{company name}',
+                                style: TextStyle(fontWeight: FontWeight.w500, color: Colors.blue),
+                              ),
+                              leading: Icon(
+                                Icons.photo_camera_front_outlined,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Divider(),
+                            ListTile(
+                              title: Text(
+                                '{detail information editable}',
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: const <Widget>[
+                          ListTile(title: Icon(Icons.telegram, color: Colors.blue)),
+                          ListTile(title: Icon(Icons.facebook, color: Colors.blue)),
+                          ListTile(
+                            title: Text('{phone number}'),
+                            leading: Icon(
+                              Icons.phone,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          ListTile(
+                            title: Text('{personal email}'),
+                            leading: Icon(
+                              Icons.email,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          ListTile(
+                            title: Text('{location}'),
+                            leading: Icon(
+                              Icons.location_on,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                height: 2,
+                color: Colors.black,
+              ),
               Expanded(
                 child: GridView.count(
                     crossAxisCount: 2,

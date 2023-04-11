@@ -35,44 +35,12 @@ class AppModule extends Module {
   List<Bind> get binds => [];
 
   List<ModularRoute> get routes => [
-        ChildRoute('/', child: (context, args) => HomePage()),
+        ChildRoute('/', child: (context, args) => const HomePage()),
       ];
 }
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  Future onPressed() async {
-    final redirectUri = '????';
-
-    final authorizationCode = '???';
-
-    // final tokenEndpoint = oauth2.Oauth2ApitokenEndpoint.toString();
-
-    // final requestBody = {
-    //   'code': authorizationCode,
-    //   'client_id': clientId,
-    //   'client_secret': clientSecret,
-    //   'redirect_uri': redirectUri,
-    //   'grant_type': 'authorization_code',
-    // };
-
-    // final response = await http.post(Uri.parse(tokenEndpoint),
-    //     headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: requestBody);
-
-    // if (response.statusCode == 200) {
-    //   final jsonResponse = jsonDecode(response.body);
-    //   final accessToken = jsonResponse['access_token'];
-    //   final expiresIn = jsonResponse['expires_in'];
-    //   final tokenType = jsonResponse['token_type'];
-    //   final refreshToken = jsonResponse['refresh_token'];
-
-    //   // Use the access token to make requests to the API
-    //   // ...
-    // } else {
-    //   throw Exception('Failed to exchange authorization code for access token.');
-    // }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +50,42 @@ class HomePage extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: const Text("Json")),
         body: Row(
-          children: <Widget>[
-            ElevatedButton(onPressed: onPressed, child: Text("Sign in")),
+          children: [
+            SizedBox(
+              height: double.infinity,
+              width: 400,
+              child: DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.green,
+                ),
+                child: Column(
+                  children: [const Text("blue")],
+                ),
+              ),
+            ),
+            Expanded(
+              child: DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.yellow,
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 200,
+                      width: double.infinity,
+                      child: Container(color: Colors.pink, child: Text("red")),
+                    ),
+                    const SizedBox(
+                      width: double.infinity,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(color: Colors.orange),
+                        child: Text("orange"),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),
