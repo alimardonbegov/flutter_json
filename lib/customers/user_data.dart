@@ -28,7 +28,7 @@ class UserDataWidget extends StatelessWidget {
         } else if (state is ChosenUserCubitStateReady) {
           return Column(
             children: [
-              UserBrief(state.data["json"]),
+              UserCard(state.data["json"]),
               Container(height: 2, color: Colors.black),
               Expanded(
                 child: GridView.count(
@@ -54,9 +54,9 @@ class UserDataWidget extends StatelessWidget {
   }
 }
 
-class UserBrief extends StatelessWidget {
+class UserCard extends StatelessWidget {
   final Map<String, dynamic> jsonData;
-  const UserBrief(this.jsonData, {super.key});
+  const UserCard(this.jsonData, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +136,7 @@ class InputWidget extends StatelessWidget {
   final String keyMap;
   final Map<String, List<String>> config;
   final Function onStopEditing;
-  final TextEditingController _controller = TextEditingController();
+  final _controller = TextEditingController();
 
   InputWidget({
     super.key,
@@ -147,6 +147,7 @@ class InputWidget extends StatelessWidget {
     required this.keyMap,
   }) {
     _controller.text = initValue ?? "";
+    _controller.selection = TextSelection.fromPosition(TextPosition(offset: _controller.text.length));
   }
 
   @override
