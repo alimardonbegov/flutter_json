@@ -23,5 +23,14 @@
     "rus": ["номер телефона", "+382 68 000 000", "введите номер телефона"],
     "cnr": ["", "", ""],
     "eng": ["phone", "+382 68 000 000", "Enter phone number"]
+  },
+  "CLIENT_LOCATION": {
+    "rus": [
+      "адрес проживания в Черногории",
+      "Подгорица, Старый аэродром, ул. Кирпичная, д. 6",
+      "введите адрес электронной почты"
+    ],
+    "cnr": ["", "Podgorica, Stari Aerodrom, Streetname bb", ""],
+    "eng": ["address", "Podgorica, Stari Aerodrom, Streetname bb", "Enter full address"]
   }
 }

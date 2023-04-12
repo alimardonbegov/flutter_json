@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../app/data_source.dart';
 import './cubit.dart';
-import 'user_brief.dart';
 import 'user_data.dart';
 import './users_list.dart';
 

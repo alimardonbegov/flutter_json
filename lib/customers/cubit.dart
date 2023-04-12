@@ -12,19 +12,21 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
     emit(ChosenUserCubitStateLoading());
 
     final Map<String, dynamic> jsonData = await ds.getData(id, "users");
-    Map<String, dynamic> jsonItem;
-
-    jsonData["json"] == null ? jsonItem = {} : jsonItem = jsonData["json"];
 
     try {
-      emit(ChosenUserCubitStateReady(jsonItem, id));
+      emit(ChosenUserCubitStateReady(jsonData, id));
     } catch (e) {
-      emit(ChosenUserCubitStateError(e.toString(), jsonItem, id));
+      emit(ChosenUserCubitStateError(e.toString(), jsonData, id));
     }
   }
 
   Future<void> updateUserData(String id, String key, String value) async {
-    await ds.updateData(id, state.data, key, value);
+    ds.updateData(id, state.data["json"], key, value); // async method, but use without await for react ui changing
+
+    final Map<String, dynamic> newData = state.data;
+    newData["json"][key] = value;
+
+    emit(ChosenUserCubitStateReady(newData, id));
   }
 }
 
@@ -44,10 +46,10 @@ class ChosenUserCubitStateLoading extends ChosenUserCubitState {
 }
 
 class ChosenUserCubitStateReady extends ChosenUserCubitState {
-  ChosenUserCubitStateReady(data, id) : super(data, id);
+  const ChosenUserCubitStateReady(data, id) : super(data, id);
 }
 
 class ChosenUserCubitStateError extends ChosenUserCubitState {
   final String error;
-  ChosenUserCubitStateError(this.error, data, id) : super(data, id);
+  const ChosenUserCubitStateError(this.error, data, id) : super(data, id);
 }

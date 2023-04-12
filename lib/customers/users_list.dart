@@ -41,9 +41,9 @@ class UsersListWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               var item = ds.usersList[index];
               return ListTile(
-                leading: Icon(Icons.person),
+                leading: const Icon(Icons.person),
                 title: Text(item.getStringValue("username")),
-                subtitle: Text(item.getStringValue("email")),
+                // subtitle: Text(item.getStringValue("email")),
                 onTap: () => cubit.choseUser(item.id),
               );
             },
