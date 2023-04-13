@@ -33,6 +33,10 @@ class UserDataWidget extends StatelessWidget {
               Expanded(
                 child: GridView.count(
                     crossAxisCount: 2,
+                    // padding: EdgeInsets.zero, // set padding to zero
+                    // mainAxisSpacing: 1.0, // eliminate spacing between child widgets
+                    crossAxisSpacing: 10.0, // eliminate spacing between child widgets
+                    childAspectRatio: 8, // adjust aspect ratio of child widgets
                     children: ds.config.entries
                         .map((entrie) => InputWidget(
                               initValue: state.data["json"][entrie.key] ?? "",
