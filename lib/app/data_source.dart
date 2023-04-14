@@ -48,8 +48,6 @@ class PocketBaseDataSource extends DataSource {
       finalMapFromJson[key] = valueMap.map((k, v) => MapEntry(k, List<String>.from(v)));
     });
 
-    // print(jsonConfigParsed["CLIENT_IME"]["eng"][2]);
-
     _config = finalMapFromJson;
   }
 

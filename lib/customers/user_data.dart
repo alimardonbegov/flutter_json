@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../app/data_source.dart';
-import './cubit.dart';
+import './user_card_cubit.dart';
+import './user_data_cubit.dart';
 
 class UserDataWidget extends StatelessWidget {
   final ds = Modular.get<DataSource>();
@@ -28,12 +29,13 @@ class UserDataWidget extends StatelessWidget {
         } else if (state is ChosenUserCubitStateReady) {
           return Column(
             children: [
-              UserCard(state.data["json"]),
+              UserCardWidget(),
               Container(height: 2, color: Colors.black),
               Expanded(
                 child: GridView.count(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10.0,
+                    crossAxisSpacing: 10.0,
                     childAspectRatio: 8,
                     children: ds.config.entries
                         .map((entrie) => InputWidget(
@@ -56,77 +58,105 @@ class UserDataWidget extends StatelessWidget {
   }
 }
 
-class UserCard extends StatelessWidget {
-  final Map<String, dynamic> jsonData;
-  const UserCard(this.jsonData, {super.key});
+class UserCardWidget extends StatelessWidget {
+  // final ds = Modular.get<DataSource>();
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 250,
-      child: Row(
-        children: [
-          Expanded(
-            child: Card(
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    title: Text(
-                      "${jsonData["CLIENT_IME"] ?? "{name}"} ${jsonData["CLIENT_PREZIME"] ?? "{surname}"}",
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    subtitle: const Text(
-                      '{company name}',
-                      style: TextStyle(fontWeight: FontWeight.w500, color: Colors.blue),
-                    ),
-                    leading: const Icon(
-                      Icons.photo_camera_front_outlined,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const Divider(),
-                  const ListTile(
-                    title: Text(
-                      '{detail information editable}',
-                      style: TextStyle(fontWeight: FontWeight.w500),
+    final chosenUserCubit = BlocProvider.of<ChosenUserCubit>(context);
+
+    return BlocProvider(
+        create: (_) => UserCardCubit(chosenUserCubit),
+        child: BlocBuilder<UserCardCubit, UserCardCubitState>(
+          builder: (context, state) {
+            if (state is UserCardCubitStateInit) {
+              return const SizedBox(
+                height: 250,
+                child: Text("user not selected"),
+              );
+            } else if (state is UserCardCubitStateLoading) {
+              return const SizedBox(
+                height: 250,
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is UserCardCubitStateReady) {
+              return Column(
+                children: [
+                  SizedBox(
+                    height: 250,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Card(
+                            child: Column(
+                              children: <Widget>[
+                                ListTile(
+                                  title: Text(
+                                    "${state.data["js3on"]["CLIENT_IME"] ?? "{name}"} ${[
+                                          "CLIENT_PREZIME"
+                                        ] ?? "{surname}"}",
+                                    style: TextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                  subtitle: const Text(
+                                    '{company name}',
+                                    style: TextStyle(fontWeight: FontWeight.w500, color: Colors.blue),
+                                  ),
+                                  leading: const Icon(
+                                    Icons.photo_camera_front_outlined,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const Divider(),
+                                const ListTile(
+                                  title: Text(
+                                    '{detail information editable}',
+                                    style: TextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: <Widget>[
+                              const ListTile(title: Icon(Icons.telegram, color: Colors.blue)),
+                              const ListTile(title: Icon(Icons.facebook, color: Colors.blue)),
+                              ListTile(
+                                title: Text('${["CLIENT_PHONE"] ?? ""}'),
+                                leading: const Icon(
+                                  Icons.phone,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              ListTile(
+                                title: Text('${["CLIENT_EMAIL"] ?? ""}'),
+                                leading: const Icon(
+                                  Icons.email,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              ListTile(
+                                title: Text('${["CLIENT_LOCATION"] ?? ""}'),
+                                leading: const Icon(
+                                  Icons.location_on,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: Column(
-              children: <Widget>[
-                const ListTile(title: Icon(Icons.telegram, color: Colors.blue)),
-                const ListTile(title: Icon(Icons.facebook, color: Colors.blue)),
-                ListTile(
-                  title: Text('${jsonData["CLIENT_PHONE"] ?? ""}'),
-                  leading: const Icon(
-                    Icons.phone,
-                    color: Colors.blue,
-                  ),
-                ),
-                ListTile(
-                  title: Text('${jsonData["CLIENT_EMAIL"] ?? ""}'),
-                  leading: const Icon(
-                    Icons.email,
-                    color: Colors.blue,
-                  ),
-                ),
-                ListTile(
-                  title: Text('${jsonData["CLIENT_LOCATION"] ?? ""}'),
-                  leading: const Icon(
-                    Icons.location_on,
-                    color: Colors.blue,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+              );
+            } else if (state is UserCardCubitStateError) {
+              return Container(child: Text(state.error));
+            }
+            return Container();
+          },
+        ));
   }
 }
 
