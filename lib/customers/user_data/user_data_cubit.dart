@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
-import '../app/data_source.dart';
+import '../../app/data_source.dart';
 
 class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   final DataSource ds;

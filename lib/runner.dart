@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+// import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
 import './app/data_source.dart';
 import './main.dart';
-import 'customers/screen.dart';
+import './customers/screen.dart';
 
 void runner() async {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -18,6 +19,8 @@ void runner() async {
 
 class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
+    // Modular.setInitialRoute('/page1');
+
     return MaterialApp.router(
       title: 'My Smart App',
       theme: ThemeData(primarySwatch: Colors.blue),
@@ -34,7 +37,22 @@ class AppModule extends Module {
         Bind.singleton((i) => PocketBaseDataSource(i(), "assets/configs/config_user.json")),
       ];
 
+  @override
   List<ModularRoute> get routes => [
-        ChildRoute('/', child: (context, args) => HomePage()),
+        ChildRoute('/', child: (context, args) => HomePage(), children: [
+          ChildRoute('/page1', child: (context, args) => InternalPage(title: 'page 1')),
+          ChildRoute('/page2', child: (context, args) => InternalPage(title: 'page 2')),
+          ChildRoute('/page3', child: (context, args) => InternalPage(title: 'page 3'))
+        ]),
       ];
+}
+
+class InternalPage extends StatelessWidget {
+  final String title;
+
+  const InternalPage({Key? key, required this.title}) : super(key: key);
+
+  Widget build(BuildContext context) {
+    return Center(child: Text(title));
+  }
 }

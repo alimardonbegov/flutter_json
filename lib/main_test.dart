@@ -1,8 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:http/http.dart' as http;
+// import 'package:flutter_modular/flutter_modular.dart';
+import 'package:pocketbase/pocketbase.dart';
+import './app/data_source.dart';
+import './main.dart';
+import './customers/screen.dart';
+import 'customers/user_data/user_data_cubit.dart';
+import 'customers/users_list.dart';
 
 void main() async {
   runner();
@@ -20,6 +26,8 @@ void runner() async {
 
 class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
+    // Modular.setInitialRoute('/');
+
     return MaterialApp.router(
       title: 'My Smart App',
       theme: ThemeData(primarySwatch: Colors.blue),
@@ -31,60 +39,67 @@ class AppWidget extends StatelessWidget {
 
 class AppModule extends Module {
   @override
-  List<Bind> get binds => [];
+  List<Bind> get binds => [
+        Bind.factory<PocketBase>((i) => pb),
+        Bind.singleton((i) => PocketBaseDataSource(i(), "assets/configs/config_user.json")),
+      ];
 
+  @override
   List<ModularRoute> get routes => [
-        ChildRoute('/', child: (context, args) => const HomePage()),
+        ChildRoute('/', child: (context, args) => HomePage(), children: [
+          ChildRoute('/page1', child: (context, args) => InternalPage(title: 'page 1')),
+          ChildRoute('/page2', child: (context, args) => InternalPage(title: 'page 2')),
+          ChildRoute('/page3', child: (context, args) => InternalPage(title: 'page 3'))
+        ]),
       ];
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class InternalPage extends StatelessWidget {
+  final String title;
 
-  @override
+  const InternalPage({Key? key, required this.title}) : super(key: key);
+
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData.dark(),
-      home: Scaffold(
-        appBar: AppBar(title: const Text("Json")),
-        body: Row(
+    return Center(child: Text(title));
+  }
+}
+
+class HomePage extends StatelessWidget {
+  final ds = Modular.get<DataSource>();
+
+  Widget build(BuildContext context) {
+    final leading = SizedBox(
+      width: MediaQuery.of(context).size.width * 0.3,
+      child: Column(
+        children: [
+          ListTile(
+            title: Text('Page 1'),
+            onTap: () => Modular.to.navigate('/page1'),
+          ),
+          ListTile(
+            title: Text('Page 2'),
+            onTap: () => Modular.to.navigate('/page2'),
+          ),
+          ListTile(
+            title: Text('Page 3'),
+            onTap: () => Modular.to.navigate('/page3'),
+          ),
+        ],
+      ),
+    );
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Home Page')),
+      body: BlocProvider(
+        create: (_) => ChosenUserCubit(ds),
+        child: Row(
           children: [
-            SizedBox(
-              height: double.infinity,
-              width: 400,
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: Colors.green,
-                ),
-                child: Column(
-                  children: [const Text("blue")],
-                ),
-              ),
-            ),
-            Expanded(
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: Colors.yellow,
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 200,
-                      width: double.infinity,
-                      child: Container(color: Colors.pink, child: Text("red")),
-                    ),
-                    const SizedBox(
-                      width: double.infinity,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(color: Colors.orange),
-                        child: Text("orange"),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            )
+            SizedBox(width: 400, child: UsersListWidget()),
+            leading,
+            Container(width: 2, color: Colors.black45),
+            // Expanded(child: UserDetail()),
+
+            Expanded(child: RouterOutlet()),
           ],
         ),
       ),

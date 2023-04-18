@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../app/data_source.dart';
-import 'user_data_cubit.dart';
+import './user_data/user_data_cubit.dart';
 
 /// left part of the screen - rendering list of users
 

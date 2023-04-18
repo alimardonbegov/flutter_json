@@ -2,48 +2,29 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
-import './user_data_cubit.dart';
+import '../user_data/user_data_cubit.dart';
 
 class UserCardCubit extends Cubit<UserCardCubitState> {
-  // UserCardCubit() : super(UserCardCubitStateInit());
-
-  // void changeData(data, id) {
-  //   emit(UserCardCubitStateReady(data, id));
-  // }
-
-  // !first example (not chaning state)
   final ChosenUserCubit chosenUserCubit;
-  late StreamSubscription<ChosenUserCubitState> userCardSubscription;
+  late StreamSubscription<ChosenUserCubitState> _sub;
 
   UserCardCubit(
     this.chosenUserCubit,
   ) : super(UserCardCubitStateInit()) {
-    userCardSubscription = chosenUserCubit.stream.listen((ChosenUserCubitState chosenUserState) {
-      if (chosenUserState is ChosenUserCubitStateLoading) {
-        emit(UserCardCubitStateLoading());
-      }
-
+    _sub = chosenUserCubit.stream.listen((ChosenUserCubitState chosenUserState) {
       if (chosenUserState is ChosenUserCubitStateReady) {
         emit(UserCardCubitStateReady(chosenUserState.data, chosenUserState.id));
-      }
-
-      if (chosenUserState is ChosenUserCubitStateError) {
+      } else if (chosenUserState is ChosenUserCubitStateError) {
         emit(UserCardCubitStateError(chosenUserState.error, chosenUserState.data, chosenUserState.id));
       }
     });
   }
 
-  // @override
-  // void onChange(Cubit<UserCardCubitState> change) {
-  //   print(change);
-  //   super.onChange(change);
-  // }
-
-  // @override
-  // Future<void> close() {
-  //   userSubscription.cancel();
-  //   return super.close();
-  // }
+  @override
+  Future<void> close() async {
+    await _sub.cancel();
+    return super.close();
+  }
 }
 
 @immutable
@@ -55,10 +36,6 @@ abstract class UserCardCubitState {
 
 class UserCardCubitStateInit extends UserCardCubitState {
   UserCardCubitStateInit() : super({}, "");
-}
-
-class UserCardCubitStateLoading extends UserCardCubitState {
-  UserCardCubitStateLoading() : super({}, "");
 }
 
 class UserCardCubitStateReady extends UserCardCubitState {
