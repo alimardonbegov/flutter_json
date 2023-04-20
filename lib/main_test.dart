@@ -7,7 +7,7 @@ import 'package:pocketbase/pocketbase.dart';
 import './app/data_source.dart';
 import './main.dart';
 import './customers/screen.dart';
-import 'customers/user_data/user_data_cubit.dart';
+import 'customers/data/user_data_cubit.dart';
 import 'customers/users_list.dart';
 
 void main() async {

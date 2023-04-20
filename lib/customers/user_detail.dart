@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../app/data_source.dart';
-import './user_data/user_data.dart';
-import './user_data/user_data_cubit.dart';
-import './user_card/user_card.dart';
+import './data/user_data_cubit.dart';
+import './card/card.dart';
 
 class UserDetail extends StatelessWidget {
-  final ds = Modular.get<DataSource>();
-
-  UserDetail({super.key});
+  const UserDetail({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final cubit = BlocProvider.of<ChosenUserCubit>(context);
     return BlocBuilder<ChosenUserCubit, ChosenUserCubitState>(
       builder: (context, state) {
         if (state is ChosenUserCubitStateInit) {
@@ -36,16 +31,14 @@ class UserDetail extends StatelessWidget {
                 height: 20,
                 child: Row(
                   children: [
-                    ElevatedButton(onPressed: () => Modular.to.navigate('/page1'), child: Text('Page 1')),
-                    ElevatedButton(onPressed: () => Modular.to.navigate('/page2'), child: Text('Page 2')),
-                    ElevatedButton(onPressed: () => Modular.to.navigate('/page3'), child: Text('Page 3'))
+                    ElevatedButton(onPressed: () => Modular.to.navigate('/customer_data'), child: const Text('Data')),
+                    ElevatedButton(
+                        onPressed: () => Modular.to.navigate('/customer_documents'), child: const Text('Documents')),
                   ],
                 ),
               ),
-
               Container(height: 2, color: Colors.black),
-              Expanded(child: RouterOutlet()),
-              // Expanded(child: UserDataWidget(ds: ds, cubit: cubit, state: state)),
+              const Expanded(child: RouterOutlet()),
             ],
           );
         } else if (state is ChosenUserCubitStateError) {

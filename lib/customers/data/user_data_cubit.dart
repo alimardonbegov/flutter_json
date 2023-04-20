@@ -21,13 +21,12 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   }
 
   Future<void> updateUserData(String id, String key, String value) async {
-    await ds.updateData(
-        id, state.data["json"], key, value); // async method, but use without await for react ui changing
+    ds.updateData(id, state.data["json"], key, value); // async method, but use without await for react ui changing
 
-    // final Map<String, dynamic> newData = state.data;
-    // newData["json"][key] = value;
-
-    // emit(ChosenUserCubitStateReady(newData, id));
+    //! используется для костыльного апдейта card_cubit, убрать когда будет готово через события
+    final Map<String, dynamic> newData = state.data;
+    newData["json"][key] = value;
+    emit(ChosenUserCubitStateReady(newData, id));
   }
 }
 

@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_js/customers/documents/user_documents.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-// import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
 import './app/data_source.dart';
 import './main.dart';
 import './customers/screen.dart';
+import './customers/data/user_data.dart';
 
 void runner() async {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -19,7 +20,7 @@ void runner() async {
 
 class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
-    // Modular.setInitialRoute('/page1');
+    Modular.setInitialRoute('/customer_data'); //! можно установить исходную первую страницу
 
     return MaterialApp.router(
       title: 'My Smart App',
@@ -40,19 +41,8 @@ class AppModule extends Module {
   @override
   List<ModularRoute> get routes => [
         ChildRoute('/', child: (context, args) => HomePage(), children: [
-          ChildRoute('/page1', child: (context, args) => InternalPage(title: 'page 1')),
-          ChildRoute('/page2', child: (context, args) => InternalPage(title: 'page 2')),
-          ChildRoute('/page3', child: (context, args) => InternalPage(title: 'page 3'))
+          ChildRoute('/customer_data', child: (context, args) => UserDataWidget()),
+          ChildRoute('/customer_documents', child: (context, args) => DocumentsWidget()),
         ]),
       ];
-}
-
-class InternalPage extends StatelessWidget {
-  final String title;
-
-  const InternalPage({Key? key, required this.title}) : super(key: key);
-
-  Widget build(BuildContext context) {
-    return Center(child: Text(title));
-  }
 }
