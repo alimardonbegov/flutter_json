@@ -159,7 +159,6 @@
 				A63D1AFA3C152903C93447DB /* Pods-Runner.release.xcconfig */,
 				92D18DFA50FAEDE84D77C143 /* Pods-Runner.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -222,7 +221,7 @@
 				};
 			};
 			buildConfigurationList = 33CC10E82044A3C60003C045 /* Build configuration list for PBXProject "Runner" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (

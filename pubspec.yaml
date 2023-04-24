@@ -17,7 +17,7 @@ dependencies:
   bloc: ^8.0.0
   tpl_docx:
     path: ../tpl_for_docx
-    # git: https://github.com/alimardonbegov/docxtpl
+  pdf: ^3.10.1
 
 dev_dependencies:
   flutter_test:
@@ -26,6 +26,18 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter.ttf
+        # - asset: fonts/Inter-Regular.ttf
+        #   weight: 400
+        # - asset: fonts/Inter-Medium.ttf
+        #   weight: 500
+        # - asset: fonts/Inter-Bold.ttf
+        #   weight: 700
   assets:
     - assets/configs/
-    - assets/templates/
+    # - assets/templates/
+    - assets/templates/JPR/
+    - assets/fonts/

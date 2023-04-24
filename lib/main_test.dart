@@ -46,11 +46,13 @@ class AppModule extends Module {
 
   @override
   List<ModularRoute> get routes => [
-        ChildRoute('/', child: (context, args) => HomePage(), children: [
-          ChildRoute('/page1', child: (context, args) => InternalPage(title: 'page 1')),
-          ChildRoute('/page2', child: (context, args) => InternalPage(title: 'page 2')),
-          ChildRoute('/page3', child: (context, args) => InternalPage(title: 'page 3'))
-        ]),
+        ChildRoute('/', child: (context, args) => HomePage()
+            // , children: [
+            //   ChildRoute('/page1', child: (context, args) => InternalPage(title: 'page 1')),
+            //   ChildRoute('/page2', child: (context, args) => InternalPage(title: 'page 2')),
+            //   ChildRoute('/page3', child: (context, args) => InternalPage(title: 'page 3'))
+            // ]
+            ),
       ];
 }
 
