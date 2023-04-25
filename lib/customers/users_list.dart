@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 
 // import 'package:pdf_google_fonts/pdf_google_fonts.dart';
 
@@ -21,33 +19,6 @@ class UsersListWidget extends StatelessWidget {
 
   Future<bool> getUsers() async {
     await ds.getInitData("selectInit");
-
-    //! PDF templater 1
-
-    final pdf = pw.Document();
-
-    //load image from assets (error)
-    // final imgSrc = await rootBundle.load('/assets/templates/JPR/1.jpg');
-    // final imgUtf8 = imgSrc.buffer.asUint8List();
-    // final image = pw.MemoryImage(imgUtf8);
-
-    final image =
-        pw.MemoryImage(File("/Users/alimardon/Downloads/1.jpg").readAsBytesSync()); // delete after assets loading
-    final fontData = await rootBundle.load("assets/fonts/Inter.ttf");
-    final ttf = pw.Font.ttf(fontData);
-
-    //! JPR first page
-
-    final pages = JPR();
-    final firstPage = pages.createFirstPage(image, ttf);
-
-    pdf.addPage(firstPage);
-
-    final generatedBytes = await pdf.save();
-    final file = File("/Users/alimardon/Downloads/pdf.pdf");
-    file.writeAsBytesSync(generatedBytes);
-
-    // ! 2
 
     // ! TEMPLATOR for docx
 
@@ -97,18 +68,4 @@ class UsersListWidget extends StatelessWidget {
       },
     );
   }
-}
-
-class PdfDocParser extends PdfDocumentParserBase {
-  PdfDocParser(super.bytes);
-
-  @override
-  void mergeDocument(PdfDocument pdfDocument) {}
-
-  @override
-  int get size => bytes.length;
-
-  @override
-  // TODO: implement xrefOffset
-  int get xrefOffset => throw UnimplementedError();
 }
