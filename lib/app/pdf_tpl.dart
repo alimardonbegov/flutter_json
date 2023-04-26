@@ -1,18 +1,44 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/widgets.dart';
+import 'package:pocketbase/pocketbase.dart';
 
-class JPRtpl {
-  final Font font;
-  final Map<String, String> client;
+import 'data_source.dart';
 
-  JPRtpl({required this.font, required this.client});
+abstract class PdfTpl {
+  final DataSource ds;
+  final Map<String, dynamic> clientMap;
 
-  createFirstPage() {
-    final image =
-        pw.MemoryImage(File("/Users/alimardon/Downloads/1.jpg").readAsBytesSync()); // delete after assets loading
+  PdfTpl({required this.ds, required this.clientMap});
+
+  Future<List<int>> generateFile();
+
+  Future<String> uploadFileToDB(String companyId, List<int> bytes);
+}
+
+// JPR PdfTpl
+class JPRtpl extends PdfTpl {
+  JPRtpl({required super.ds, required super.clientMap});
+
+  final _pdf = pw.Document();
+
+  Future<MemoryImage> _getAssetImage(String tplPath) async {
+    final imageData = await rootBundle.load(tplPath);
+    final imageBytes = Uint8List.view(imageData.buffer);
+    return pw.MemoryImage(imageBytes);
+  }
+
+  Future<Font> _getFont() async {
+    final fontData = await rootBundle.load("assets/fonts/Inter.ttf");
+    return pw.Font.ttf(fontData);
+  }
+
+  Future<Page> _createFirstPage(Font font) async {
+    final image = await _getAssetImage("assets/templates/JPR/1.jpg");
+
     return pw.Page(
       pageFormat: PdfPageFormat.a4,
       build: (pw.Context context) => pw.Container(
@@ -46,7 +72,7 @@ class JPRtpl {
               top: 206,
               left: 139,
               child: pw.Text(
-                "${client["maticni broj"]}",
+                "${clientMap["maticni broj"]}",
                 style: pw.TextStyle(font: font, letterSpacing: 3.3),
               ), // 1.2 Maticni Broj / JMB
             ),
@@ -54,7 +80,7 @@ class JPRtpl {
               top: 227,
               left: 139,
               child: pw.Text(
-                "${client["company name"]}",
+                "${clientMap["company name"]}",
                 style: pw.TextStyle(font: font),
               ), // 1.3 Puni Naziv / Prezime
             ),
@@ -62,7 +88,7 @@ class JPRtpl {
               top: 301,
               left: 125,
               child: pw.Text(
-                "${client["drzava"]}",
+                "${clientMap["drzava"]}",
                 style: pw.TextStyle(font: font),
               ), // 2.1 Drzava
             ),
@@ -70,7 +96,7 @@ class JPRtpl {
               top: 313,
               left: 125,
               child: pw.Text(
-                "${client["opstina"]}",
+                "${clientMap["opstina"]}",
                 style: pw.TextStyle(font: font),
               ), // 2.2 Opstina
             ),
@@ -78,7 +104,7 @@ class JPRtpl {
               top: 326,
               left: 125,
               child: pw.Text(
-                "${client["mjesto"]}",
+                "${clientMap["mjesto"]}",
                 style: pw.TextStyle(font: font),
               ), // 2.3 Mjesto
             ),
@@ -86,7 +112,7 @@ class JPRtpl {
               top: 339,
               left: 125,
               child: pw.Text(
-                "${client["ulica i broj"]}",
+                "${clientMap["ulica i broj"]}",
                 style: pw.TextStyle(font: font),
               ), // 2.4 Ulica i broj
             ),
@@ -94,7 +120,7 @@ class JPRtpl {
               top: 362,
               left: 125,
               child: pw.Text(
-                "${client["email"]}",
+                "${clientMap["email"]}",
                 style: pw.TextStyle(font: font),
               ), // 2.6 e-mail
             ),
@@ -118,7 +144,7 @@ class JPRtpl {
               top: 436,
               left: 156,
               child: pw.Text(
-                "${client["broj dodatka B"]}",
+                "${clientMap["broj dodatka B"]}",
                 style: pw.TextStyle(font: font),
               ), // 3.2.1 Broj dodatka B
             ),
@@ -136,7 +162,7 @@ class JPRtpl {
                 child: pw.SizedBox(
                   width: 400,
                   child: pw.Text(
-                    "${client["napomena"]}",
+                    "${clientMap["napomena"]}",
                     style: pw.TextStyle(font: font),
                   ), // 4. Napomena
                 )),
@@ -144,7 +170,7 @@ class JPRtpl {
               top: 570,
               left: 67,
               child: pw.Text(
-                "${client["JMB"]}",
+                "${clientMap["JMB"]}",
                 style: pw.TextStyle(font: font, letterSpacing: 3.9),
               ), // JMB
             ),
@@ -154,9 +180,8 @@ class JPRtpl {
     );
   }
 
-  createSecondPage() {
-    final image =
-        pw.MemoryImage(File("/Users/alimardon/Downloads/2.jpg").readAsBytesSync()); // delete after assets loading
+  Future<Page> _createSecondPage(Font font) async {
+    final image = await _getAssetImage("assets/templates/JPR/2.jpg");
     const double fz = 8;
 
     return pw.Page(
@@ -176,7 +201,7 @@ class JPRtpl {
               top: 81,
               left: 108,
               child: pw.Text(
-                "${client["naziv organa"]}",
+                "${clientMap["naziv organa"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 1.1 Naziv organa
@@ -184,7 +209,7 @@ class JPRtpl {
               top: 90,
               left: 108,
               child: pw.Text(
-                "${client["datum registracije"]}",
+                "${clientMap["datum registracije"]}",
                 style: pw.TextStyle(font: font, fontSize: fz, letterSpacing: 4.8),
               ),
             ), // 1.2 Datum registracije
@@ -192,7 +217,7 @@ class JPRtpl {
               top: 98,
               left: 108,
               child: pw.Text(
-                "${client["broj regisrtarskog uloska"]}",
+                "${clientMap["broj regisrtarskog uloska"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 1.3 Broj regisrtarskog uloska
@@ -200,7 +225,7 @@ class JPRtpl {
               top: 376,
               left: 20,
               child: pw.Text(
-                "${client["podaci o vlascenom licu - JMB"]}",
+                "${clientMap["podaci o vlascenom licu - JMB"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 5. Podaci o vlascenom licu - JMB
@@ -208,7 +233,7 @@ class JPRtpl {
               top: 375.5,
               left: 118,
               child: pw.Text(
-                "${client["prezime"]} ${client["ime"]}",
+                "${clientMap["prezime"]} ${clientMap["ime"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 5. Podaci o vlascenom licu - Prezime i ime
@@ -216,7 +241,7 @@ class JPRtpl {
               top: 375.5,
               left: 264,
               child: pw.Text(
-                "${client["adresa"]}",
+                "${clientMap["adresa"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 5. Podaci o vlascenom licu - Adresa
@@ -226,9 +251,8 @@ class JPRtpl {
     );
   }
 
-  createThirdPage() {
-    final image =
-        pw.MemoryImage(File("/Users/alimardon/Downloads/3.jpg").readAsBytesSync()); // delete after assets loading
+  Future<Page> _createThirdPage(Font font) async {
+    final image = await _getAssetImage("assets/templates/JPR/3.jpg");
     const double fz = 11;
 
     return pw.Page(
@@ -248,7 +272,7 @@ class JPRtpl {
               top: 76,
               left: 142,
               child: pw.Text(
-                "${client["JMB"]}",
+                "${clientMap["JMB"]}",
                 style: pw.TextStyle(font: font, fontSize: fz, letterSpacing: 4.3),
               ),
             ), // 1.1 JMB
@@ -256,7 +280,7 @@ class JPRtpl {
               top: 87,
               left: 142,
               child: pw.Text(
-                "${client["prezime_2"]}",
+                "${clientMap["prezime_2"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 1.2 Prezime
@@ -264,7 +288,7 @@ class JPRtpl {
               top: 87,
               left: 348,
               child: pw.Text(
-                "${client["ime_2"]}",
+                "${clientMap["ime_2"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 1.3 Ime
@@ -272,7 +296,7 @@ class JPRtpl {
               top: 114,
               left: 142,
               child: pw.Text(
-                "${client["datum rodeja"]}",
+                "${clientMap["datum rodeja"]}",
                 style: pw.TextStyle(font: font, fontSize: fz, letterSpacing: 5),
               ),
             ), // 1.6. Datum rodeja
@@ -288,7 +312,7 @@ class JPRtpl {
               top: 178,
               left: 142,
               child: pw.Text(
-                "${client["drzavljanstvo"]}",
+                "${clientMap["drzavljanstvo"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 1.11 Drzavljanstvo
@@ -298,7 +322,7 @@ class JPRtpl {
                 child: pw.SizedBox(
                   width: 110,
                   child: pw.Text(
-                    "${client["vrsta identif doc"]}",
+                    "${clientMap["vrsta identif doc"]}",
                     style: pw.TextStyle(font: font, fontSize: 8),
                   ),
                 )), // 1.12 Vrsta identif documenta
@@ -306,7 +330,7 @@ class JPRtpl {
               top: 194,
               left: 391,
               child: pw.Text(
-                "${client["broj indet doc"]}",
+                "${clientMap["broj indet doc"]}",
                 style: pw.TextStyle(font: font, fontSize: 9),
               ),
             ), // 1.13 Broj indet documenta
@@ -314,7 +338,7 @@ class JPRtpl {
               top: 209,
               left: 142,
               child: pw.Text(
-                "${client["izdat od"]}",
+                "${clientMap["izdat od"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 1.14 Izdat od
@@ -322,7 +346,7 @@ class JPRtpl {
               top: 582,
               left: 157,
               child: pw.Text(
-                "${client["osnov osiguranja"]}",
+                "${clientMap["osnov osiguranja"]}",
                 style: pw.TextStyle(font: font, fontSize: fz),
               ),
             ), // 4.2 Osnov osiguranja
@@ -330,7 +354,7 @@ class JPRtpl {
               top: 616,
               left: 157,
               child: pw.Text(
-                "${client["datum doc"]}",
+                "${clientMap["datum doc"]}",
                 style: pw.TextStyle(font: font, fontSize: fz, letterSpacing: 4.5),
               ),
             ), // 4.5 Datum doc
@@ -338,5 +362,32 @@ class JPRtpl {
         )),
       ),
     );
+  }
+
+  @override
+  Future<List<int>> generateFile() async {
+    final font = await _getFont();
+    final pageOne = await _createFirstPage(font);
+    final pageTwo = await _createSecondPage(font);
+    final pageThree = await _createThirdPage(font);
+
+    _pdf
+      ..addPage(pageOne)
+      ..addPage(pageTwo)
+      ..addPage(pageThree);
+
+    final bytes = await _pdf.save();
+    return bytes;
+  }
+
+  @override
+  Future<String> uploadFileToDB(String companyId, List<int> bytes) async {
+    final Map<String, dynamic> companyData = await ds.getData(companyId, 'selectForTpl');
+    final String userId = companyData["user_id"];
+
+    final RecordModel record = await ds.sentDocToDB(bytes, userId, companyId, "pdf");
+    final String link = await ds.getDocLink(record.id, "documents");
+
+    return link;
   }
 }

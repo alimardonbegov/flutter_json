@@ -1,14 +1,17 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_js/private/private_pb.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:pocketbase/pocketbase.dart';
 import './app/pdf_tpl.dart';
+import 'app/data_source.dart';
+import 'app/docx_tpl.dart';
+import 'main.dart';
 
 void main() async {
+  await pb.admins.authWithPassword(login, pass);
   runner();
 }
 
@@ -37,16 +40,22 @@ class AppWidget extends StatelessWidget {
 
 class AppModule extends Module {
   @override
+  List<Bind> get binds => [
+        Bind.factory<PocketBase>((i) => pb),
+        Bind.singleton((i) => PocketBaseDataSource(i(), "assets/configs/config_user.json")),
+      ];
+
+  @override
   List<ModularRoute> get routes => [ChildRoute('/', child: (context, args) => HomePage())];
 }
 
 class HomePage extends StatelessWidget {
-  Widget build(BuildContext context) {
-    Future<bool> getFont() async {
-      final fontData = await rootBundle.load("assets/fonts/Inter.ttf");
-      final ttf = pw.Font.ttf(fontData);
+  final ds = Modular.get<DataSource>();
 
-      //! JPR first page
+  Widget build(BuildContext context) {
+    Future<bool> createFile() async {
+      final String tplId = "xwshzdift79mk6n";
+      final String companyId = "f6tt406qe0fu7q2";
       final Map<String, String> client = {
         //first page
         "maticni broj": "03523456",
@@ -68,8 +77,8 @@ class HomePage extends StatelessWidget {
         "ime": "Alexander",
         "adresa": "Bar, Dobra Voda, Marelica bb",
         //third page
-        "prezime_2": "Podgornyi",
-        "ime_2": "Aleksei",
+        "prezime_2": "Podgornyi", // director
+        "ime_2": "Aleksei", // director
         "datum rodeja": "12  03  1994", // with two spaces between for now
         "drzavljanstvo": "Rusko",
         "vrsta identif doc": "Dozvola za privremeni boravak i rad",
@@ -79,24 +88,22 @@ class HomePage extends StatelessWidget {
         "datum doc": "20  03  2023", // with two spaces between for now
       };
 
-      final JPRtemplate = JPRtpl(font: ttf, client: client);
+      //! PDF
 
-      final pdf = pw.Document();
+      final jpr = JPRtpl(ds: ds, clientMap: client);
+      final bytes = await jpr.generateFile();
+      final linkToPdf = await jpr.uploadFileToDB(companyId, bytes);
+      print(linkToPdf);
 
-      final pageOne = JPRtemplate.createFirstPage();
-      final pageTwo = JPRtemplate.createSecondPage();
-      final pageThree = JPRtemplate.createThirdPage();
+      // final file = File("/Users/alimardon/Downloads/JPR_generated.pdf");
+      // file.writeAsBytesSync(bytes);
 
-      pdf
-        ..addPage(pageOne)
-        ..addPage(pageTwo)
-        ..addPage(pageThree);
+      // !DOCX
+      final templater = DocxTemplater(ds);
+      final List<int> bytesDocx = await templater.generateDoc(tplId, companyId);
+      final String linkToDocx = await templater.uploadDocToDB(companyId, bytesDocx);
+      print(linkToDocx);
 
-      final generatedBytes = await pdf.save();
-      final file = File("/Users/alimardon/Downloads/JPR_generated.pdf");
-      file.writeAsBytesSync(generatedBytes);
-
-      // ! 2
       print("file created");
       return true;
     }
@@ -111,7 +118,7 @@ class HomePage extends StatelessWidget {
       body: Row(
         children: [
           FutureBuilder(
-            future: getFont(),
+            future: createFile(),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
               if (snapshot.hasData) {
                 return Text("data");

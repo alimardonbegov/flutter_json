@@ -9,7 +9,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../app/data_source.dart';
 import '../app/pdf_tpl.dart';
-import '../app/templater.dart';
+import '../app/docx_tpl.dart';
 import './data/user_data_cubit.dart';
 
 /// left part of the screen - rendering list of users

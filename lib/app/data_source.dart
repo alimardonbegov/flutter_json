@@ -25,7 +25,7 @@ abstract class DataSource {
 
   Future<void> updateData(String id, Map<String, dynamic> jsonItem, String key, String value);
 
-  Future<RecordModel> sentDocToDB(List<int> bytes, String userId, String companyId);
+  Future<RecordModel> sentDocToDB(List<int> bytes, String userId, String companyId, String fileFormat);
 
   Future<List<int>> getDocBytes(String docPath);
 }
@@ -94,6 +94,7 @@ class PocketBaseDataSource extends DataSource {
     List<int> bytes,
     String userId,
     String companyId,
+    String fileFormat,
   ) async {
     final record = await pb.collection('documents').create(
       body: {
@@ -104,7 +105,7 @@ class PocketBaseDataSource extends DataSource {
         http.MultipartFile.fromBytes(
           "document",
           bytes,
-          filename: "gen.docx",
+          filename: "file.$fileFormat",
         )
       ],
     );
