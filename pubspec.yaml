@@ -16,7 +16,7 @@ dependencies:
   flutter_bloc: ^8.0.0
   bloc: ^8.0.0
   tpl_docx:
-    path: ../tpl_for_docx
+    path: packages/tpl_for_docx
   pdf: ^3.10.1
 
 dev_dependencies:

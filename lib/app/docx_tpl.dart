@@ -29,7 +29,7 @@ class DocxTemplater {
   }
 
   Future<List<int>> generateDoc(String tplId, String companyId) async {
-    final String fullTplPath = await ds.getDocLink(tplId, 'templates');
+    final String fullTplPath = await ds.getDocLinkById(tplId, 'templates');
     final List<int> bytes = await ds.getDocBytes(fullTplPath);
 
     final tpl = TplDocx(bytes);
@@ -48,7 +48,7 @@ class DocxTemplater {
     final String userId = companyData["user_id"];
 
     final RecordModel record = await ds.sentDocToDB(bytes, userId, companyId, "docx");
-    final String link = await ds.getDocLink(record.id, "documents");
+    final String link = await ds.getDocLinkById(record.id, "documents");
 
     return link;
   }

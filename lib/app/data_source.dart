@@ -21,7 +21,8 @@ abstract class DataSource {
 
   Future<Map<String, dynamic>> getData(String id, String collectionName);
 
-  Future<String> getDocLink(String docId, String collectionName);
+  Future<String> getDocLinkById(String docId, String collectionName);
+  Future<String> getDocLinkByName(String docName, String collectionName);
 
   Future<void> updateData(String id, Map<String, dynamic> jsonItem, String key, String value);
 
@@ -68,8 +69,15 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<String> getDocLink(String docId, String collectionName) async {
+  Future<String> getDocLinkById(String docId, String collectionName) async {
     final RecordModel recordTpl = await pb.collection(collectionName).getOne(docId);
+    final String fileName = recordTpl.getListValue<String>('document')[0];
+    return pb.getFileUrl(recordTpl, fileName).toString();
+  }
+
+  @override
+  Future<String> getDocLinkByName(String docName, String collectionName) async {
+    final recordTpl = await pb.collection('templates').getFirstListItem('templateName="$docName"');
     final String fileName = recordTpl.getListValue<String>('document')[0];
     return pb.getFileUrl(recordTpl, fileName).toString();
   }

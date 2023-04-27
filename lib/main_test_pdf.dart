@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_js/app/tpl_factory.dart';
 import 'package:flutter_js/private/private_pb.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -54,57 +55,62 @@ class HomePage extends StatelessWidget {
 
   Widget build(BuildContext context) {
     Future<bool> createFile() async {
-      final String tplId = "xwshzdift79mk6n";
-      final String companyId = "f6tt406qe0fu7q2";
-      final Map<String, String> client = {
-        //first page
-        "maticni broj": "03523456",
-        "company name": "COMPANY DOO",
-        "drzava": "Crna Gora",
-        "opstina": "Budva",
-        "mjesto": "Sveti Stefat",
-        "ulica i broj": "BB Slobode",
-        "email": "email@gmail.com",
-        "broj dodatka B": "1",
-        "napomena": "Prijava lica ovlaštenog za elektronsko slanje podatka PU; izvršnog direktora",
-        "JMB": "2402986223104",
-        //second page
-        "naziv organa": "Centralni registar privrednih subjekata",
-        "datum registracije": "08  02  2023", // with two spaces between for now
-        "broj regisrtarskog uloska": "5 - 1114596/001",
-        "podaci o vlascenom licu - JMB": "0807984220007",
-        "prezime": "Garkavyy",
-        "ime": "Alexander",
-        "adresa": "Bar, Dobra Voda, Marelica bb",
-        //third page
-        "prezime_2": "Podgornyi", // director
-        "ime_2": "Aleksei", // director
-        "datum rodeja": "12  03  1994", // with two spaces between for now
-        "drzavljanstvo": "Rusko",
-        "vrsta identif doc": "Dozvola za privremeni boravak i rad",
-        "broj indet doc": "319098842",
-        "izdat od": "FL Ulcinj",
-        "osnov osiguranja": "Radni odnos",
-        "datum doc": "20  03  2023", // with two spaces between for now
-      };
+      // final String tplId = "xwshzdift79mk6n";
+      // final Map<String, String> client = {
+      //   //first page
+      //   "maticni broj": "03523456",
+      //   "company name": "COMPANY DOO",
+      //   "drzava": "Crna Gora",
+      //   "opstina": "Budva",
+      //   "mjesto": "Sveti Stefat",
+      //   "ulica i broj": "BB Slobode",
+      //   "email": "email@gmail.com",
+      //   "broj dodatka B": "1",
+      //   "napomena": "Prijava lica ovlaštenog za elektronsko slanje podatka PU; izvršnog direktora",
+      //   "JMB": "2402986223104",
+      //   //second page
+      //   "naziv organa": "Centralni registar privrednih subjekata",
+      //   "datum registracije": "08  02  2023", // with two spaces between for now
+      //   "broj regisrtarskog uloska": "5 - 1114596/001",
+      //   "podaci o vlascenom licu - JMB": "0807984220007",
+      //   "prezime": "Garkavyy",
+      //   "ime": "Alexander",
+      //   "adresa": "Bar, Dobra Voda, Marelica bb",
+      //   //third page
+      //   "prezime_2": "Podgornyi", // director
+      //   "ime_2": "Aleksei", // director
+      //   "datum rodeja": "12  03  1994", // with two spaces between for now
+      //   "drzavljanstvo": "Rusko",
+      //   "vrsta identif doc": "Dozvola za privremeni boravak i rad",
+      //   "broj indet doc": "319098842",
+      //   "izdat od": "FL Ulcinj",
+      //   "osnov osiguranja": "Radni odnos",
+      //   "datum doc": "20  03  2023", // with two spaces between for now
+      // };
 
+      final String companyId = "f6tt406qe0fu7q2";
+
+      //! factory
+      final tpl = TplFactory(name: TplName.jpr, ds: ds, companyId: companyId);
+
+      // print(TplName.jpr.toString().split('.').last);
       //! PDF
 
-      final jpr = JPRtpl(ds: ds, clientMap: client);
-      final bytes = await jpr.generateFile();
-      final linkToPdf = await jpr.uploadFileToDB(companyId, bytes);
-      print(linkToPdf);
+      // final jpr = JPRtpl(ds: ds, clientMap: client);
+      // final bytes = await jpr.generateFile();
+      // final linkToPdf = await jpr.uploadFileToDB(companyId, bytes);
+      // print(linkToPdf);
 
       // final file = File("/Users/alimardon/Downloads/JPR_generated.pdf");
       // file.writeAsBytesSync(bytes);
 
       // !DOCX
-      final templater = DocxTemplater(ds);
-      final List<int> bytesDocx = await templater.generateDoc(tplId, companyId);
-      final String linkToDocx = await templater.uploadDocToDB(companyId, bytesDocx);
-      print(linkToDocx);
+      // final templater = DocxTemplater(ds);
+      // final List<int> bytesDocx = await templater.generateDoc(tplId, companyId);
+      // final String linkToDocx = await templater.uploadDocToDB(companyId, bytesDocx);
+      // print(linkToDocx);
 
-      print("file created");
+      // print("file created");
       return true;
     }
 
