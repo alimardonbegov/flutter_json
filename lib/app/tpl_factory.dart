@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/widgets.dart';
-import 'package:pocketbase/pocketbase.dart';
 import 'package:tpl_docx/tpl_docx.dart';
 import './data_source.dart';
 
@@ -28,12 +27,9 @@ class Templater {
     required String companyId,
   }) {
     switch (tplName) {
-      case TplName.jpr:
-        return JprTemplater(tplName: tplName, ds: ds, companyId: companyId);
-      case TplName.izjava:
-        return DocxTemplater(tplName: tplName, ds: ds, companyId: companyId);
-      default:
-        throw 'Erorr creating $tplName';
+      case TplName.jpr: return JprTemplater(tplName: tplName, ds: ds, companyId: companyId);
+      case TplName.izjava: return DocxTemplater(tplName: tplName, ds: ds, companyId: companyId);
+      default: throw 'Erorr creating $tplName';
     }
   }
 
@@ -58,15 +54,14 @@ class DocxTemplater extends Templater {
   final TplName tplName;
   final String companyId;
 
-  DocxTemplater._({required this.ds, required this.tplName, required this.companyId})
-      : super._(ds: this.ds, tplName, companyId);
+  DocxTemplater._({required this.ds, required this.tplName, required this.companyId}): super._(ds, tplName, companyId);
 
   factory DocxTemplater({
     required TplName tplName,
     required DataSource ds,
     required String companyId,
   }) {
-    return DocxTemplater._(ds, tplName, companyId);
+    return DocxTemplater._(ds: ds, tplName: tplName, companyId: companyId);
   }
 
   late TplDocx _tpl;
