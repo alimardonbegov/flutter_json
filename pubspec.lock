@@ -363,7 +363,7 @@ packages:
   tpl_docx:
     dependency: "direct main"
     description:
-      path: "packages/tpl_for_docx"
+      path: "pack/tpl_for_docx"
       relative: true
     source: path
     version: "1.0.0"
