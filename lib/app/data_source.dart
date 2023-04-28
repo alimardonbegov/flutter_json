@@ -32,6 +32,7 @@ abstract class DataSource {
 
   Future<String> getDocLinkById(String docId, String collectionName);
 
+  //!создал только для того, чтобы доставать шаблоны по имени для Templater, может по id там оставить?
   Future<String> getDocLinkByName(String docName, String collectionName);
 
   /// update user's data
