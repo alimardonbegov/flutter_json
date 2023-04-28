@@ -4,7 +4,6 @@ import 'package:flutter_js/customers/card/card_cubit.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../../app/data_source.dart';
 import '../data/user_data_cubit.dart';
-import './card_bloc.dart';
 
 class UserCardWidget extends StatelessWidget {
   final ds = Modular.get<DataSource>();

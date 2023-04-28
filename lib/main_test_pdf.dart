@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_js/app/tpl_factory.dart';
+import 'package:flutter_js/app/templater.dart';
+import 'package:flutter_js/app/template_types.dart';
 import 'package:flutter_js/private/private_pb.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:pocketbase/pocketbase.dart';
-import './app/pdf_tpl.dart';
 import 'app/data_source.dart';
-import 'app/docx_tpl.dart';
 import 'main.dart';
 
 void main() async {
@@ -53,71 +50,32 @@ class AppModule extends Module {
 class HomePage extends StatelessWidget {
   final ds = Modular.get<DataSource>();
 
+  /// strong names of  docx templates in data base
+  // List<String> templates = ["izjava", "pisanaPonudaPoslodavca", "punomocBoravak", "ugovorKnigovodstvo"];
+
   Widget build(BuildContext context) {
     Future<bool> createFile() async {
-      // final String tplId = "xwshzdift79mk6n";
-      // final Map<String, String> client = {
-      //   //first page
-      //   "maticni broj": "03523456",
-      //   "company name": "COMPANY DOO",
-      //   "drzava": "Crna Gora",
-      //   "opstina": "Budva",
-      //   "mjesto": "Sveti Stefat",
-      //   "ulica i broj": "BB Slobode",
-      //   "email": "email@gmail.com",
-      //   "broj dodatka B": "1",
-      //   "napomena": "Prijava lica ovlaštenog za elektronsko slanje podatka PU; izvršnog direktora",
-      //   "JMB": "2402986223104",
-      //   //second page
-      //   "naziv organa": "Centralni registar privrednih subjekata",
-      //   "datum registracije": "08  02  2023", // with two spaces between for now
-      //   "broj regisrtarskog uloska": "5 - 1114596/001",
-      //   "podaci o vlascenom licu - JMB": "0807984220007",
-      //   "prezime": "Garkavyy",
-      //   "ime": "Alexander",
-      //   "adresa": "Bar, Dobra Voda, Marelica bb",
-      //   //third page
-      //   "prezime_2": "Podgornyi", // director
-      //   "ime_2": "Aleksei", // director
-      //   "datum rodeja": "12  03  1994", // with two spaces between for now
-      //   "drzavljanstvo": "Rusko",
-      //   "vrsta identif doc": "Dozvola za privremeni boravak i rad",
-      //   "broj indet doc": "319098842",
-      //   "izdat od": "FL Ulcinj",
-      //   "osnov osiguranja": "Radni odnos",
-      //   "datum doc": "20  03  2023", // with two spaces between for now
-      // };
+      const String tplId = "xwshzdift79mk6n";
+      const String companyId = "f6tt406qe0fu7q2";
 
-      final String companyId = "f6tt406qe0fu7q2";
+      //! Templater test
 
-      //! factory
-      final tpl = TplFactory(name: TplName.jpr, ds: ds, companyId: companyId);
+      // не лучше ли оставить поиск по id (так было до этого)?
+      // обработать несуществующие названия/id файлов docx
+      final Template template = JprPdfTemplate();
 
-      // print(TplName.jpr.toString().split('.').last);
-      //! PDF
+      final mapForTpl = await ds.generateClientMap(template, companyId);
 
-      // final jpr = JPRtpl(ds: ds, clientMap: client);
-      // final bytes = await jpr.generateFile();
-      // final linkToPdf = await jpr.uploadFileToDB(companyId, bytes);
-      // print(linkToPdf);
+      // здесь ds нужен !только! чтобы для docx достать файл, подумать можно ли убрать
+      final tpl = Templater(template: template, mapForTpl: mapForTpl, ds: ds);
+      final bytes = await tpl.generateFile();
 
-      // final file = File("/Users/alimardon/Downloads/JPR_generated.pdf");
-      // file.writeAsBytesSync(bytes);
+      final record = await ds.sentDocToDB(bytes, companyId);
+      final docLink = await ds.getDocLinkById(record.id, "documents");
+      print(docLink);
 
-      // !DOCX
-      // final templater = DocxTemplater(ds);
-      // final List<int> bytesDocx = await templater.generateDoc(tplId, companyId);
-      // final String linkToDocx = await templater.uploadDocToDB(companyId, bytesDocx);
-      // print(linkToDocx);
-
-      // print("file created");
       return true;
     }
-
-    // load image from assets (error)
-    // final imgSrc = await rootBundle.load('/assets/templates/JPR/1.jpg');
-    // final imgUtf8 = imgSrc.buffer.asUint8List();
-    // final image = pw.MemoryImage(imgUtf8);
 
     return Scaffold(
       appBar: AppBar(title: Text('Home Page')),
