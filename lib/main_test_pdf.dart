@@ -50,9 +50,6 @@ class AppModule extends Module {
 class HomePage extends StatelessWidget {
   final ds = Modular.get<DataSource>();
 
-  /// strong names of  docx templates in data base
-  // List<String> templates = ["izjava", "pisanaPonudaPoslodavca", "punomocBoravak", "ugovorKnigovodstvo"];
-
   Widget build(BuildContext context) {
     Future<bool> createFile() async {
       const String tplId = "xwshzdift79mk6n";
@@ -60,19 +57,20 @@ class HomePage extends StatelessWidget {
 
       //! Templater test
 
-      // не лучше ли оставить поиск по id (так было до этого)?
-      // обработать несуществующие названия/id файлов docx
-      final Template template = JprPdfTemplate();
+      final String fullTplPath = await ds.getDocLinkById(tplId, 'templates');
+      final List<int> docxBytes = await ds.getDocBytes(fullTplPath);
+
+      final Template template = DocxTemplate(docxBytes);
+      final Template templatePdf = JprPdfTemplate();
 
       final mapForTpl = await ds.generateClientMap(template, companyId);
 
-      // здесь ds нужен !только! чтобы для docx достать файл, подумать можно ли убрать
-      final tpl = Templater(template: template, mapForTpl: mapForTpl, ds: ds);
-      final bytes = await tpl.generateFile();
-
-      final record = await ds.sentDocToDB(bytes, companyId);
-      final docLink = await ds.getDocLinkById(record.id, "documents");
-      print(docLink);
+      final tpl = Templater(template: template, mapForTpl: mapForTpl);
+      final resultBytes = await tpl.generateFile();
+      print(resultBytes);
+      // final record = await ds.sentDocToDB(resultBytes, companyId);
+      // final docLink = await ds.getDocLinkById(record.id, "documents");
+      // print(docLink);
 
       return true;
     }

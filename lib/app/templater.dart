@@ -3,22 +3,22 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/widgets.dart';
 import 'package:tpl_docx/tpl_docx.dart';
-import './data_source.dart';
 import 'template_types.dart';
 
 class Templater {
   final Template template;
   final Map<String, String> mapForTpl;
-  final DataSource ds;
+  final List<int>? bytes;
 
-  const Templater._(this.template, this.mapForTpl, this.ds);
+  const Templater._(this.template, this.mapForTpl, [this.bytes]);
 
-  factory Templater({required Template template, required Map<String, String> mapForTpl, required DataSource ds}) {
+  /// generator tpl files from Template and Map. Bytes is required for docx generator
+  factory Templater({required Template template, required Map<String, String> mapForTpl, List<int>? bytes}) {
     switch (template.runtimeType) {
       case DocxTemplate:
-        return DocxTemplater(template, mapForTpl, ds);
+        return DocxTemplater(template, mapForTpl, bytes!);
       case JprPdfTemplate:
-        return JprTemplater(template, mapForTpl, ds);
+        return JprTemplater(template, mapForTpl);
       default:
         throw 'Erorr creating $template';
     }
@@ -31,16 +31,14 @@ class Templater {
 class DocxTemplater extends Templater {
   final Template template;
   final Map<String, String> mapForTpl;
-  final DataSource ds;
+  final List<int> bytes;
 
-  DocxTemplater._(this.template, this.mapForTpl, this.ds) : super._(template, mapForTpl, ds);
-  factory DocxTemplater(Template template, Map<String, String> mapForTpl, DataSource ds) =>
-      DocxTemplater._(template, mapForTpl, ds);
+  DocxTemplater._(this.template, this.mapForTpl, this.bytes) : super._(template, mapForTpl, bytes);
+  factory DocxTemplater(Template template, Map<String, String> mapForTpl, List<int> bytes) =>
+      DocxTemplater._(template, mapForTpl, bytes);
 
   @override
   Future<List<int>> generateFile() async {
-    final String fullTplPath = await ds.getDocLinkByName(template.tplName.toString(), 'templates');
-    final List<int> bytes = await ds.getDocBytes(fullTplPath);
     final tpl = TplDocx(bytes);
 
     final List<String> fields = tpl.mergedFields;
@@ -56,11 +54,9 @@ class DocxTemplater extends Templater {
 class PdfTemplater extends Templater {
   final Template template;
   final Map<String, String> mapForTpl;
-  final DataSource ds;
 
-  PdfTemplater._(this.template, this.mapForTpl, this.ds) : super._(template, mapForTpl, ds);
-  factory PdfTemplater(Template template, Map<String, String> mapForTpl, final DataSource ds) =>
-      PdfTemplater._(template, mapForTpl, ds);
+  PdfTemplater._(this.template, this.mapForTpl) : super._(template, mapForTpl, null);
+  factory PdfTemplater(Template template, Map<String, String> mapForTpl) => PdfTemplater._(template, mapForTpl);
 
   final _pdf = pw.Document();
 
@@ -79,11 +75,9 @@ class PdfTemplater extends Templater {
 class JprTemplater extends PdfTemplater {
   final Template template;
   final Map<String, String> mapForTpl;
-  DataSource ds;
 
-  JprTemplater._(this.template, this.mapForTpl, this.ds) : super._(template, mapForTpl, ds);
-  factory JprTemplater(Template template, Map<String, String> mapForTpl, DataSource ds) =>
-      JprTemplater._(template, mapForTpl, ds);
+  JprTemplater._(this.template, this.mapForTpl) : super._(template, mapForTpl);
+  factory JprTemplater(Template template, Map<String, String> mapForTpl) => JprTemplater._(template, mapForTpl);
 
   Future<Page> _createFirstPage(Font font) async {
     final image = await _getAssetImage("assets/templates/jpr/1.jpg");

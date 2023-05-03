@@ -1,20 +1,12 @@
 ///type of template (docx, pdf)
-
-// оставил конструктор с именем, так в Templater в DocxTemplate видит только родительские поля, тк работаю с абстракцией там
-abstract class Template {
-  final String tplName;
-
-  Template(this.tplName);
-}
+///docx required bytes, pdf tpl saved in assets
+abstract class Template {}
 
 class DocxTemplate extends Template {
-  DocxTemplate(super.tplName);
+  final List<int> bytes;
+  DocxTemplate(this.bytes);
 }
 
-abstract class PdfTemplate extends Template {
-  PdfTemplate({String tplName = ''}) : super(tplName);
-}
+abstract class PdfTemplate extends Template {}
 
-class JprPdfTemplate extends PdfTemplate {
-  JprPdfTemplate({String tplName = ''}) : super(tplName: tplName);
-}
+class JprPdfTemplate extends PdfTemplate {}
