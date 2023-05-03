@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:http/http.dart';
-import 'package:tpl_docx/tpl_docx.dart';
+// import 'package:tpl_docx/tpl_docx.dart';
 
 void main(List<String> args) async {
   Future<List<int>> getDocBytesFromRemote(String docxUrl) async {
@@ -35,13 +35,13 @@ void main(List<String> args) async {
   };
 
   final List<int> bytes = await getDocBytesFromLocal("lib/templates/izjava.docx");
-  final tpl = TplDocx(bytes);
+  // final tpl = TplDocx(bytes);
 
-  tpl.writeMergedFields(testMapIzjava);
-  final List<String> mergedFields = tpl.mergedFields;
-  print(mergedFields);
-  final List<int> generatedBytes = tpl.getGeneratedBytes()!;
+  // tpl.writeMergedFields(testMapIzjava);
+  // final List<String> mergedFields = tpl.mergedFields;
+  // print(mergedFields);
+  // final List<int> generatedBytes = tpl.getGeneratedBytes()!;
 
-  final file = File("lib/results/result.docx");
-  file.writeAsBytesSync(generatedBytes);
+  // final file = File("lib/results/result.docx");
+  // file.writeAsBytesSync(generatedBytes);
 }

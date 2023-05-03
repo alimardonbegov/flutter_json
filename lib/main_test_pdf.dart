@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_js/app/templater.dart';
-import 'package:flutter_js/app/template_types.dart';
 import 'package:flutter_js/private/private_pb.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'app/data_source.dart';
-import 'main.dart';
+import 'package:templater/templater.dart';
+import './main.dart';
+import './app/data_source.dart';
+import './app/pdf_templaters.dart';
 
 void main() async {
   await pb.admins.authWithPassword(login, pass);
@@ -55,19 +55,16 @@ class HomePage extends StatelessWidget {
       const String tplId = "xwshzdift79mk6n";
       const String companyId = "f6tt406qe0fu7q2";
 
-      //! Templater test
-
       final String fullTplPath = await ds.getDocLinkById(tplId, 'templates');
       final List<int> docxBytes = await ds.getDocBytes(fullTplPath);
 
-      final Template template = DocxTemplate(docxBytes);
-      final Template templatePdf = JprPdfTemplate();
+      // final tpl = DocxTemplater(docxBytes); //! Templater test for DocxTemplater
 
-      final mapForTpl = await ds.generateClientMap(template, companyId);
+      final tpl = JprPdfTemplate(); //! Templater test for PdfTemplater
 
-      final tpl = Templater(template: template, mapForTpl: mapForTpl);
-      final resultBytes = await tpl.generateFile();
-      print(resultBytes);
+      final mapForTpl = await ds.generateClientMap(tpl, companyId);
+      final resultBytes = await tpl.generateBytes(mapForTpl);
+
       // final record = await ds.sentDocToDB(resultBytes, companyId);
       // final docLink = await ds.getDocLinkById(record.id, "documents");
       // print(docLink);

@@ -2,85 +2,17 @@ import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/widgets.dart';
-import 'package:tpl_docx/tpl_docx.dart';
-import 'template_types.dart';
+import 'package:templater/templater.dart';
 
-class Templater {
-  final Template template;
-  final Map<String, String> mapForTpl;
-  final List<int>? bytes;
-
-  const Templater._(this.template, this.mapForTpl, [this.bytes]);
-
-  /// generator tpl files from Template and Map. Bytes is required for docx generator
-  factory Templater({required Template template, required Map<String, String> mapForTpl, List<int>? bytes}) {
-    switch (template.runtimeType) {
-      case DocxTemplate:
-        return DocxTemplater(template, mapForTpl, bytes!);
-      case JprPdfTemplate:
-        return JprTemplater(template, mapForTpl);
-      default:
-        throw 'Erorr creating $template';
-    }
-  }
-
-  Future<List<int>> generateFile() async => [];
-}
-
-/// docx templater for all docx file
-class DocxTemplater extends Templater {
-  final Template template;
-  final Map<String, String> mapForTpl;
-  final List<int> bytes;
-
-  DocxTemplater._(this.template, this.mapForTpl, this.bytes) : super._(template, mapForTpl, bytes);
-  factory DocxTemplater(Template template, Map<String, String> mapForTpl, List<int> bytes) =>
-      DocxTemplater._(template, mapForTpl, bytes);
-
-  @override
-  Future<List<int>> generateFile() async {
-    final tpl = TplDocx(bytes);
-
-    final List<String> fields = tpl.mergedFields;
-    final Map<String, String> mapFromField = Map.fromIterable(fields);
-    final map = {...mapFromField, ...mapForTpl};
-
-    tpl.writeMergedFields(map);
-    return tpl.getGeneratedBytes()!;
-  }
-}
-
-/// pdf abstract templater for different pdf files (due to individual generator for each tpl page in pdf)
-class PdfTemplater extends Templater {
-  final Template template;
-  final Map<String, String> mapForTpl;
-
-  PdfTemplater._(this.template, this.mapForTpl) : super._(template, mapForTpl, null);
-  factory PdfTemplater(Template template, Map<String, String> mapForTpl) => PdfTemplater._(template, mapForTpl);
-
-  final _pdf = pw.Document();
-
-  Future<Font> _getFont() async {
-    final fontData = await rootBundle.load("assets/fonts/Inter.ttf");
-    return pw.Font.ttf(fontData);
-  }
-
-  Future<MemoryImage> _getAssetImage(String tplPath) async {
+class JprPdfTemplate extends PdfTemplater {
+  Future<MemoryImage> _getImage(String tplPath) async {
     final imageData = await rootBundle.load(tplPath);
     final imageBytes = Uint8List.view(imageData.buffer);
     return pw.MemoryImage(imageBytes);
   }
-}
 
-class JprTemplater extends PdfTemplater {
-  final Template template;
-  final Map<String, String> mapForTpl;
-
-  JprTemplater._(this.template, this.mapForTpl) : super._(template, mapForTpl);
-  factory JprTemplater(Template template, Map<String, String> mapForTpl) => JprTemplater._(template, mapForTpl);
-
-  Future<Page> _createFirstPage(Font font) async {
-    final image = await _getAssetImage("assets/templates/jpr/1.jpg");
+  Future<Page> _createFirstPage(Font font, Map<String, String> mapForTpl) async {
+    final image = await _getImage("assets/templates/jpr/1.jpg");
 
     return pw.Page(
       pageFormat: PdfPageFormat.a4,
@@ -223,8 +155,8 @@ class JprTemplater extends PdfTemplater {
     );
   }
 
-  Future<Page> _createSecondPage(Font font) async {
-    final image = await _getAssetImage("assets/templates/jpr/2.jpg");
+  Future<Page> _createSecondPage(Font font, Map<String, String> mapForTpl) async {
+    final image = await _getImage("assets/templates/jpr/2.jpg");
     const double fz = 8;
 
     return pw.Page(
@@ -294,8 +226,8 @@ class JprTemplater extends PdfTemplater {
     );
   }
 
-  Future<Page> _createThirdPage(Font font) async {
-    final image = await _getAssetImage("assets/templates/jpr/3.jpg");
+  Future<Page> _createThirdPage(Font font, Map<String, String> mapForTpl) async {
+    final image = await _getImage("assets/templates/jpr/3.jpg");
     const double fz = 11;
 
     return pw.Page(
@@ -407,19 +339,28 @@ class JprTemplater extends PdfTemplater {
     );
   }
 
-  @override
-  Future<List<int>> generateFile() async {
-    final font = await _getFont();
-    final pageOne = await _createFirstPage(font);
-    final pageTwo = await _createSecondPage(font);
-    final pageThree = await _createThirdPage(font);
+  /// get the Font for the inserted text
+  Future<Font> _getFont() async {
+    final fontData = await rootBundle.load("assets/fonts/Inter.ttf");
+    return pw.Font.ttf(fontData);
+  }
 
-    _pdf
+  @override
+  Future<List<int>> generateBytes(Map<String, String> mapForTpl) async {
+    /// an empty pdf document in which the generated pages are saved
+    final pdf = pw.Document();
+
+    final font = await _getFont();
+    final pageOne = await _createFirstPage(font, mapForTpl);
+    final pageTwo = await _createSecondPage(font, mapForTpl);
+    final pageThree = await _createThirdPage(font, mapForTpl);
+
+    pdf
       ..addPage(pageOne)
       ..addPage(pageTwo)
       ..addPage(pageThree);
 
-    final bytes = await _pdf.save();
+    final bytes = await pdf.save();
     return bytes;
   }
 }

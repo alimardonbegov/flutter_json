@@ -1,7 +1,38 @@
 import 'dart:convert';
 import 'package:archive/archive_io.dart';
 
-class TplDocx {
+abstract class Templater {
+  Future<List<int>> generateBytes(Map<String, String> mapForTpl);
+}
+
+/// templater for docx format
+class DocxTemplater extends Templater {
+  final List<int> tplBytes;
+
+  DocxTemplater(this.tplBytes);
+
+  @override
+  Future<List<int>> generateBytes(Map<String, String> mapForTpl) async {
+    final tpl = _TplDocx(tplBytes);
+
+    final List<String> fields = tpl.mergedFields;
+    final Map<String, String> mapFromField = Map.fromIterable(fields);
+    final map = {...mapFromField, ...mapForTpl};
+
+    tpl.writeMergedFields(map);
+    return tpl.getGeneratedBytes()!;
+  }
+}
+
+/// Templater for pdf format. Create new instance of PdfTemplater and rewrite this method for specific pdf.
+/// Use package:pdf for creating pdf pages
+abstract class PdfTemplater extends Templater {
+  @override
+  Future<List<int>> generateBytes(Map<String, String> mapForTpl) async => [];
+}
+
+/// templater for docx
+class _TplDocx {
   final List<int> bytes;
 
   List<String> _mergedFields = [];
@@ -9,7 +40,7 @@ class TplDocx {
   late String _docXml;
   late int _documentXmlIndex;
 
-  TplDocx(this.bytes) {
+  _TplDocx(this.bytes) {
     _getArchiveAndXmlString();
     _getMergedFields();
   }
@@ -47,8 +78,7 @@ class TplDocx {
   /// get merged fields from template
   List<String> get mergedFields => _mergedFields;
 
-  /// create your own data Map <String, String> as "MERGE_FIELD_ONE" : "write this instead"
-  /// write your data in template
+  /// write your data in template (Map <String, String> as "MERGE_FIELD_ONE" : "write this instead")
   void writeMergedFields(Map<String, String> data) {
     for (var field in _mergedFields) {
       if (data.containsKey(field) &&
@@ -66,9 +96,6 @@ class TplDocx {
 
   /// get generated docx bytes
   List<int>? getGeneratedBytes() {
-    // _getArchiveAndXmlString();
-    // _templateParse(_docXml);
-
     final Archive newZip = Archive();
     for (var file in _zip.files) {
       if (file.name != 'word/document.xml') {
@@ -80,7 +107,6 @@ class TplDocx {
       }
     }
 
-    final newBytes = ZipEncoder().encode(newZip);
-    return newBytes;
+    return ZipEncoder().encode(newZip);
   }
 }

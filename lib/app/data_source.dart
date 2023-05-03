@@ -1,12 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:tpl_docx/tpl_docx.dart';
-
-import 'template_types.dart';
+import 'package:templater/templater.dart';
 
 abstract class DataSource {
   /// pocket base auth
@@ -42,7 +39,8 @@ abstract class DataSource {
 
   Future<List<int>> getDocBytes(String docPath);
 
-  Future<Map<String, String>> generateClientMap(Template template, String companyId);
+  // rewrite method in the future
+  Future<Map<String, String>> generateClientMap(Templater template, String companyId);
 }
 
 // ! POCKET BASE
@@ -147,7 +145,7 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<Map<String, String>> generateClientMap(Template template, String companyId) async {
+  Future<Map<String, String>> generateClientMap(Templater template, String companyId) async {
     Future<Map<String, dynamic>> _createUserMap(Map<String, dynamic> companyData) async {
       final String userId = companyData["user_id"];
       final Map<String, dynamic> userData = await getData(userId, "users");
@@ -162,7 +160,7 @@ class PocketBaseDataSource extends DataSource {
       };
     }
 
-    if (template.runtimeType == DocxTemplate) {
+    if (template.runtimeType == DocxTemplater) {
       final Map<String, dynamic> companyData = await getData(companyId, 'selectForTpl');
       final Map<String, String> companyMap = _createCompanyMap(companyData);
       final Map<String, dynamic> userMap = await _createUserMap(companyData);
