@@ -5,14 +5,19 @@ import 'package:pdf/widgets.dart';
 import 'package:templater/templater.dart';
 
 class JprPdfTemplate extends PdfTemplater {
-  Future<MemoryImage> _getImage(String tplPath) async {
-    final imageData = await rootBundle.load(tplPath);
-    final imageBytes = Uint8List.view(imageData.buffer);
-    return pw.MemoryImage(imageBytes);
-  }
+  final List<List<int>> pagesAsBytes;
+
+  JprPdfTemplate(this.pagesAsBytes);
+
+  /// get pdf page as image from asset
+  // Future<MemoryImage> _getImage(String tplPath) async {
+  //   final imageData = await rootBundle.load(tplPath);
+  //   final imageBytes = Uint8List.view(imageData.buffer);
+  //   return pw.MemoryImage(imageBytes);
+  // }
 
   Future<Page> _createFirstPage(Font font, Map<String, String> mapForTpl) async {
-    final image = await _getImage("assets/templates/jpr/1.jpg");
+    // final image = await _getImage("assets/templates/jpr/1.jpg");
 
     return pw.Page(
       pageFormat: PdfPageFormat.a4,
@@ -20,7 +25,7 @@ class JprPdfTemplate extends PdfTemplater {
         width: double.infinity,
         decoration: pw.BoxDecoration(
           image: pw.DecorationImage(
-            image: image,
+            image: pw.MemoryImage(Uint8List.fromList(pagesAsBytes[2])),
             fit: pw.BoxFit.cover,
           ),
         ),
@@ -156,7 +161,7 @@ class JprPdfTemplate extends PdfTemplater {
   }
 
   Future<Page> _createSecondPage(Font font, Map<String, String> mapForTpl) async {
-    final image = await _getImage("assets/templates/jpr/2.jpg");
+    // final image = await _getImage("assets/templates/jpr/2.jpg");
     const double fz = 8;
 
     return pw.Page(
@@ -165,7 +170,7 @@ class JprPdfTemplate extends PdfTemplater {
         width: double.infinity,
         decoration: pw.BoxDecoration(
           image: pw.DecorationImage(
-            image: image,
+            image: pw.MemoryImage(Uint8List.fromList(pagesAsBytes[1])),
             fit: pw.BoxFit.cover,
           ),
         ),
@@ -227,7 +232,7 @@ class JprPdfTemplate extends PdfTemplater {
   }
 
   Future<Page> _createThirdPage(Font font, Map<String, String> mapForTpl) async {
-    final image = await _getImage("assets/templates/jpr/3.jpg");
+    // final image = await _getImage("assets/templates/jpr/3.jpg");
     const double fz = 11;
 
     return pw.Page(
@@ -236,7 +241,7 @@ class JprPdfTemplate extends PdfTemplater {
         width: double.infinity,
         decoration: pw.BoxDecoration(
           image: pw.DecorationImage(
-            image: image,
+            image: pw.MemoryImage(Uint8List.fromList(pagesAsBytes[0])),
             fit: pw.BoxFit.cover,
           ),
         ),

@@ -27,19 +27,21 @@ abstract class DataSource {
   /// get data of the record
   Future<Map<String, dynamic>> getData(String id, String collectionName);
 
-  Future<String> getDocLinkById(String docId, String collectionName);
+  /// get document link of the record (for example for templates or generated files from templates)
+  Future<String> getDocLinkById(String docId, String collectionName, {int fileNumberInRecord = 0});
 
-  //!создал только для того, чтобы доставать шаблоны по имени для Templater, может по id там оставить?
-  Future<String> getDocLinkByName(String docName, String collectionName);
-
-  /// update user's data
+  /// update user's data in data base
   Future<void> updateData(String id, Map<String, dynamic> jsonItem, String key, String value);
 
+  /// upload document to data base (for example generated doc)
   Future<RecordModel> sentDocToDB(List<int> bytes, String companyId);
 
-  Future<List<int>> getDocBytes(String docPath);
+  /// get document bytes from data base (for example template)
+  Future<List<int>> getDocBytes(String fileUrl);
 
-  // rewrite method in the future
+  // Future<List<
+
+  //! rewrite method in the future
   Future<Map<String, String>> generateClientMap(Templater template, String companyId);
 }
 
@@ -81,16 +83,9 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<String> getDocLinkById(String docId, String collectionName) async {
+  Future<String> getDocLinkById(String docId, String collectionName, {int fileNumberInRecord = 0}) async {
     final RecordModel recordTpl = await pb.collection(collectionName).getOne(docId);
-    final String fileName = recordTpl.getListValue<String>('document')[0];
-    return pb.getFileUrl(recordTpl, fileName).toString();
-  }
-
-  @override
-  Future<String> getDocLinkByName(String docName, String collectionName) async {
-    final recordTpl = await pb.collection('templates').getFirstListItem('templateName="$docName"');
-    final String fileName = recordTpl.getListValue<String>('document')[0];
+    final String fileName = recordTpl.getListValue<String>('document')[fileNumberInRecord];
     return pb.getFileUrl(recordTpl, fileName).toString();
   }
 
@@ -134,13 +129,17 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<List<int>> getDocBytes(String docPath) async {
+  Future<List<int>> getDocBytes(String fileUrl) async {
     try {
       final Client client = Client();
-      final Response req = await client.get(Uri.parse(docPath));
-      return req.bodyBytes;
+      final Response response = await client.get(Uri.parse(fileUrl));
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      } else {
+        throw Exception('Failed to download file');
+      }
     } catch (e) {
-      throw Exception('error downloading remote .docx template file: ' + e.toString());
+      throw Exception('error downloading file: ' + e.toString());
     }
   }
 

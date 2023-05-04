@@ -52,22 +52,37 @@ class HomePage extends StatelessWidget {
 
   Widget build(BuildContext context) {
     Future<bool> createFile() async {
-      const String tplId = "xwshzdift79mk6n";
+      const String docxTplId = "xwshzdift79mk6n";
+      const String pdfTplId = "ro1w28rndyicb9j";
       const String companyId = "f6tt406qe0fu7q2";
 
-      final String fullTplPath = await ds.getDocLinkById(tplId, 'templates');
-      final List<int> docxBytes = await ds.getDocBytes(fullTplPath);
+      //  в цикле много запросов к базе данных (колСтр * 2)
+      Future<List<List<int>>> createListOfPdfPages(pdfTplId) async {
+        final data = await ds.getData(pdfTplId, "templates");
+        final numberOfPages = data["document"].length;
+        List<List<int>> pages = [];
 
+        for (var i = 0; i < numberOfPages; i++) {
+          final String fileName = await ds.getDocLinkById(pdfTplId, 'templates', fileNumberInRecord: i);
+          final jprPage = await ds.getDocBytes(fileName);
+          pages.add(jprPage);
+        }
+
+        return pages;
+      }
+
+      final p = await createListOfPdfPages(pdfTplId);
+      final tpl = JprPdfTemplate(p); //! Templater test for PdfTemplater
+
+      // final List<int> docxBytes = await ds.getDocBytes(fullTplPath);
       // final tpl = DocxTemplater(docxBytes); //! Templater test for DocxTemplater
-
-      final tpl = JprPdfTemplate(); //! Templater test for PdfTemplater
 
       final mapForTpl = await ds.generateClientMap(tpl, companyId);
       final resultBytes = await tpl.generateBytes(mapForTpl);
 
-      // final record = await ds.sentDocToDB(resultBytes, companyId);
-      // final docLink = await ds.getDocLinkById(record.id, "documents");
-      // print(docLink);
+      final record = await ds.sentDocToDB(resultBytes, companyId);
+      final docLink = await ds.getDocLinkById(record.id, "documents");
+      print(docLink);
 
       return true;
     }
