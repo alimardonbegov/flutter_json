@@ -27,8 +27,8 @@ abstract class DataSource {
   /// get data of the record
   Future<Map<String, dynamic>> getRecordData(String id, String collectionName);
 
-  /// get document link of the record (for example for templates or generated files from templates)
-  Future<String> getFileLinkById(String docId, String collectionName, {int fileNumberInRecord = 0});
+  /// get document url of the record (for example for templates or generated files from templates)
+  Future<String> getFileUrlById(String docId, String collectionName, {int fileNumberInRecord = 0});
 
   /// update user's data in data base
   Future<void> updateUserData(String id, Map<String, dynamic> jsonItem, String key, String value);
@@ -41,6 +41,9 @@ abstract class DataSource {
 
   //! rewrite method in the future
   Future<Map<String, String>> generateClientMap(Templater template, String companyId);
+
+  //!  slow loading
+  Future<List<List<int>>> createListOfTplfPagesAsBytes(String tplId);
 }
 
 // ! POCKET BASE
@@ -81,7 +84,7 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<String> getFileLinkById(String docId, String collectionName, {int fileNumberInRecord = 0}) async {
+  Future<String> getFileUrlById(String docId, String collectionName, {int fileNumberInRecord = 0}) async {
     final RecordModel recordTpl = await pb.collection(collectionName).getOne(docId);
     final String fileName = recordTpl.getListValue<String>('document')[fileNumberInRecord];
     return pb.getFileUrl(recordTpl, fileName).toString();
@@ -131,6 +134,7 @@ class PocketBaseDataSource extends DataSource {
     try {
       final Client client = Client();
       final Response response = await client.get(Uri.parse(fileUrl));
+      print(1);
       if (response.statusCode == 200) {
         return response.bodyBytes;
       } else {
@@ -196,6 +200,22 @@ class PocketBaseDataSource extends DataSource {
         "datum doc": "20  03  2023", // with two spaces between for now
       };
     }
+  }
+
+  @override
+  Future<List<List<int>>> createListOfTplfPagesAsBytes(String tplId) async {
+    final record = await pb.collection("templates").getOne(tplId);
+    final numberOfPages = record.data["document"].length;
+    List<List<int>> pages = [];
+
+    for (var i = 0; i < numberOfPages; i++) {
+      final String fileName = record.getListValue<String>('document')[i];
+      final String fileUrl = pb.getFileUrl(record, fileName).toString();
+      final jprPage = await getFileAsBytes(fileUrl);
+      pages.add(jprPage);
+    }
+
+    return pages;
   }
 }
 

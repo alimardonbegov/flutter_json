@@ -51,37 +51,33 @@ class HomePage extends StatelessWidget {
 
   Widget build(BuildContext context) {
     Future<bool> createFile() async {
-      const String docxTplId = "xwshzdift79mk6n";
+      const String docxTplId = "xwshzdift79mk6n"; // izjava
+      const String docxTplIdTest = "7za2t8cwdpbxmb0"; // izjava with several pages in docx for test
       const String pdfTplId = "ro1w28rndyicb9j";
       const String companyId = "f6tt406qe0fu7q2";
 
-      //  в цикле много запросов к базе данных (колСтр * 2)
-      Future<List<List<int>>> createListOfTplfPagesAsBytes(pdfTplId) async {
-        final data = await ds.getRecordData(pdfTplId, "templates");
-        final numberOfPages = data["document"].length;
-        List<List<int>> pages = [];
+      late Templater tpl; //! Templater test for PdfTemplater
 
-        for (var i = 0; i < numberOfPages; i++) {
-          final String fileName = await ds.getFileLinkById(pdfTplId, 'templates', fileNumberInRecord: i);
-          final jprPage = await ds.getFileAsBytes(fileName);
-          pages.add(jprPage);
-        }
+      //! нужно добавить проверку форматов документов (docx / jpg для pdf) по id тимплейтера
 
-        return pages;
-      }
+      // получить массив страниц по id тимплейтера
+      // print(1);
+      final pages = await ds.createListOfTplfPagesAsBytes(pdfTplId);
+      // print(2);
 
-      final p = await createListOfTplfPagesAsBytes(pdfTplId);
-      final tpl = JprPdfTemplate(p); //! Templater test for PdfTemplater
+      // в зависимости от формата файлов определить тип создаваемого шаблона:
+      // - pdf в случае jpg формата файлов
+      // - docx в случае docx формата файлов
+      // если пдф, то нужно передать конкретный тип (например jpr) и страницы
+      // не то же ли самое, что сделать вручную это и никая фабрика не нужна?
 
-      // final List<int> docxBytes = await ds.getFileAsBytes(fullTplPath);
-      // final tpl = DocxTemplater(docxBytes); //! Templater test for DocxTemplater
-
+      tpl = JprPdfTemplate(pages);
       final mapForTpl = await ds.generateClientMap(tpl, companyId);
       final resultBytes = await tpl.generateBytes(mapForTpl);
 
-      // final record = await ds.sendFileToDB(resultBytes, companyId);
-      // final docLink = await ds.getFileLinkById(record.id, "documents");
-      // print(docLink);
+      final record = await ds.sendFileToDB(resultBytes, companyId);
+      final fileUrl = await ds.getFileUrlById(record.id, "documents");
+      print(fileUrl);
 
       return true;
     }
