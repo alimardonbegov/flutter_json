@@ -11,7 +11,7 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
     if (state.id == id) return;
     emit(ChosenUserCubitStateLoading());
 
-    final Map<String, dynamic> jsonData = await ds.getData(id, "users");
+    final Map<String, dynamic> jsonData = await ds.getRecordData(id, "users");
 
     try {
       emit(ChosenUserCubitStateReady(jsonData, id));
@@ -21,7 +21,7 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   }
 
   Future<void> updateUserData(String id, String key, String value) async {
-    ds.updateData(id, state.data["json"], key, value); // async method, but use without await for react ui changing
+    ds.updateUserData(id, state.data["json"], key, value); // async method, but use without await for react ui changing
 
     //! используется для костыльного апдейта card_cubit, убрать когда будет готово через события
     final Map<String, dynamic> newData = state.data;

@@ -25,21 +25,19 @@ abstract class DataSource {
   Future<void> getInitData(String collectionName);
 
   /// get data of the record
-  Future<Map<String, dynamic>> getData(String id, String collectionName);
+  Future<Map<String, dynamic>> getRecordData(String id, String collectionName);
 
   /// get document link of the record (for example for templates or generated files from templates)
-  Future<String> getDocLinkById(String docId, String collectionName, {int fileNumberInRecord = 0});
+  Future<String> getFileLinkById(String docId, String collectionName, {int fileNumberInRecord = 0});
 
   /// update user's data in data base
-  Future<void> updateData(String id, Map<String, dynamic> jsonItem, String key, String value);
+  Future<void> updateUserData(String id, Map<String, dynamic> jsonItem, String key, String value);
 
   /// upload document to data base (for example generated doc)
-  Future<RecordModel> sentDocToDB(List<int> bytes, String companyId);
+  Future<RecordModel> sendFileToDB(List<int> bytes, String companyId);
 
   /// get document bytes from data base (for example template)
-  Future<List<int>> getDocBytes(String fileUrl);
-
-  // Future<List<
+  Future<List<int>> getFileAsBytes(String fileUrl);
 
   //! rewrite method in the future
   Future<Map<String, String>> generateClientMap(Templater template, String companyId);
@@ -67,7 +65,7 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> getData(String id, String collectionName) async {
+  Future<Map<String, dynamic>> getRecordData(String id, String collectionName) async {
     if (id != null) {
       try {
         final record = await pb.collection(collectionName).getOne(id);
@@ -83,14 +81,14 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<String> getDocLinkById(String docId, String collectionName, {int fileNumberInRecord = 0}) async {
+  Future<String> getFileLinkById(String docId, String collectionName, {int fileNumberInRecord = 0}) async {
     final RecordModel recordTpl = await pb.collection(collectionName).getOne(docId);
     final String fileName = recordTpl.getListValue<String>('document')[fileNumberInRecord];
     return pb.getFileUrl(recordTpl, fileName).toString();
   }
 
   @override
-  Future<void> updateData(
+  Future<void> updateUserData(
     String id,
     Map<String, dynamic> jsonItem,
     String key,
@@ -105,11 +103,11 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<RecordModel> sentDocToDB(
+  Future<RecordModel> sendFileToDB(
     List<int> bytes,
     String companyId,
   ) async {
-    final Map<String, dynamic> companyData = await getData(companyId, 'selectForTpl');
+    final Map<String, dynamic> companyData = await getRecordData(companyId, 'selectForTpl');
     final String userId = companyData["user_id"];
 
     final record = await pb.collection('documents').create(
@@ -129,7 +127,7 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<List<int>> getDocBytes(String fileUrl) async {
+  Future<List<int>> getFileAsBytes(String fileUrl) async {
     try {
       final Client client = Client();
       final Response response = await client.get(Uri.parse(fileUrl));
@@ -147,7 +145,7 @@ class PocketBaseDataSource extends DataSource {
   Future<Map<String, String>> generateClientMap(Templater template, String companyId) async {
     Future<Map<String, dynamic>> _createUserMap(Map<String, dynamic> companyData) async {
       final String userId = companyData["user_id"];
-      final Map<String, dynamic> userData = await getData(userId, "users");
+      final Map<String, dynamic> userData = await getRecordData(userId, "users");
       return userData["json"];
     }
 
@@ -160,7 +158,7 @@ class PocketBaseDataSource extends DataSource {
     }
 
     if (template.runtimeType == DocxTemplater) {
-      final Map<String, dynamic> companyData = await getData(companyId, 'selectForTpl');
+      final Map<String, dynamic> companyData = await getRecordData(companyId, 'selectForTpl');
       final Map<String, String> companyMap = _createCompanyMap(companyData);
       final Map<String, dynamic> userMap = await _createUserMap(companyData);
       return {...companyMap, ...userMap};
@@ -212,7 +210,7 @@ class PocketBaseDataSource extends DataSource {
 //   }
 
 //   @override
-//   Future<void> getData(id) async {
+//   Future<void> getRecordData(id) async {
 //     final jsonData = await _readLocalFile(dataPath);
 //     _jsonItem = jsonData;
 
@@ -226,7 +224,7 @@ class PocketBaseDataSource extends DataSource {
 //   }
 
 //   @override
-//   Future<void> updateData(key, value, id) async {
+//   Future<void> updateUserData(key, value, id) async {
 //     if (_jsonItem[key] != value) {
 //       final File file = File(dataPath);
 //       _jsonItem[key] = value;
@@ -238,7 +236,7 @@ class PocketBaseDataSource extends DataSource {
 //   @override
 //   Future<void> getInitData() async {}
 //
-// Future<List<int>> _getDocBytesFromLocal(String docPath) async {
+// Future<List<int>> _getFileAsBytesFromLocal(String docPath) async {
 //   try {
 //     final file = File(docPath);
 //     return file.readAsBytesSync();
@@ -261,7 +259,7 @@ class PocketBaseDataSource extends DataSource {
 //   }
 
 //   @override
-//   Future<void> getData(id) async {
+//   Future<void> getRecordData(id) async {
 //     final jsonData = await _readHttpInf(dataPath);
 //     _jsonItem = jsonData;
 
@@ -275,7 +273,7 @@ class PocketBaseDataSource extends DataSource {
 //   }
 
 //   @override
-//   Future<void> updateData(key, value, id) async {
+//   Future<void> updateUserData(key, value, id) async {
 //     if (_jsonItem[key] != value) {
 //       final Map<String, dynamic> data = {key: value};
 //       final http.Response response =

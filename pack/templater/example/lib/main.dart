@@ -3,7 +3,7 @@ import 'package:http/http.dart';
 // import 'package:tpl_docx/tpl_docx.dart';
 
 void main(List<String> args) async {
-  Future<List<int>> getDocBytesFromRemote(String docxUrl) async {
+  Future<List<int>> getFileAsBytesFromRemote(String docxUrl) async {
     try {
       final Client _client = Client();
       final Response req = await _client.get(Uri.parse(docxUrl));
@@ -14,7 +14,7 @@ void main(List<String> args) async {
     }
   }
 
-  Future<List<int>> getDocBytesFromLocal(String docPath) async {
+  Future<List<int>> getFileAsBytesFromLocal(String docPath) async {
     try {
       final file = File(docPath);
       final List<int> bytes = file.readAsBytesSync();
@@ -34,7 +34,7 @@ void main(List<String> args) async {
     "COMPANY_PIB": "222299999",
   };
 
-  final List<int> bytes = await getDocBytesFromLocal("lib/templates/izjava.docx");
+  final List<int> bytes = await getFileAsBytesFromLocal("lib/templates/izjava.docx");
   // final tpl = TplDocx(bytes);
 
   // tpl.writeMergedFields(testMapIzjava);
