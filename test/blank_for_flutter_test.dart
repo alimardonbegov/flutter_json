@@ -4,11 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 // import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
-import './app/data_source.dart';
-import './main.dart';
-import './customers/screen.dart';
-import 'customers/data/user_data_cubit.dart';
-import 'customers/users_list.dart';
+import '../lib/app/data_source.dart';
+import '../lib/main.dart';
+import '../lib/customers/screen.dart';
+import '../lib/customers/data/user_data_cubit.dart';
+import '../lib/customers/users_list.dart';
 
 void main() async {
   runner();

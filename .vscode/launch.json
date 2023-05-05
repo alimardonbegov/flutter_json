@@ -18,7 +18,7 @@
             "name": "Test",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main_test_tpl.dart",
+            "program": "test/templater_test.dart",
             "args": [
                 "--dart-define-from-file",
                 "pb_auth.json"

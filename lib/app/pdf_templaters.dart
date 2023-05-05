@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/widgets.dart';
 import 'package:templater/templater.dart';
+
+import 'package:http/http.dart' as http;
 
 class JprPdfTemplate extends PdfTemplater {
   final List<List<int>> pagesAsBytes;
@@ -346,8 +351,17 @@ class JprPdfTemplate extends PdfTemplater {
 
   /// get the Font for the inserted text
   Future<Font> _getFont() async {
-    final fontData = await rootBundle.load("assets/fonts/Inter.ttf");
-    return pw.Font.ttf(fontData);
+    //! убрал для теста вне flutter'a
+    // final fontData = await rootBundle.load("assets/fonts/Inter.ttf");
+    // return pw.Font.ttf(fontData);
+
+    //! добавил для теста вне flutter'a
+    final Client client = Client();
+    final Response response = await client
+        .get(Uri.parse("https://raw.githubusercontent.com/alimardonbegov/flutter_json/main/assets/fonts/Inter.ttf"));
+
+    final bytes = response.bodyBytes;
+    return pw.Font.ttf(ByteData.view(bytes.buffer));
   }
 
   @override

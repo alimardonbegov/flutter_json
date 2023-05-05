@@ -134,7 +134,6 @@ class PocketBaseDataSource extends DataSource {
     try {
       final Client client = Client();
       final Response response = await client.get(Uri.parse(fileUrl));
-      print(1);
       if (response.statusCode == 200) {
         return response.bodyBytes;
       } else {
