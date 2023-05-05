@@ -31,7 +31,7 @@ migrate_working_dir/
 .pub/
 /build/
 
-/lib/private
+
 
 # Symbolication related
 app.*.symbols
@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Hide login and password from version control
+pb_auth.json

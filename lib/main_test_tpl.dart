@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_js/private/private_pb.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:templater/templater.dart';

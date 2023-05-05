@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:archive/archive_io.dart';
 
 abstract class Templater {
+  const Templater();
   Future<List<int>> generateBytes(Map<String, String> mapForTpl);
 }
 
@@ -9,7 +10,7 @@ abstract class Templater {
 class DocxTemplater extends Templater {
   final List<int> tplBytes;
 
-  DocxTemplater(this.tplBytes);
+  const DocxTemplater(this.tplBytes);
 
   @override
   Future<List<int>> generateBytes(Map<String, String> mapForTpl) async {

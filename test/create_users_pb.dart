@@ -1,8 +1,11 @@
-import 'package:flutter_js/private/private_pb.dart';
+import 'package:flutter_js/private/pb_auth.json';
 import 'package:pocketbase/pocketbase.dart';
 
 void main() async {
   final pb = PocketBase('https://app.advanture.me');
+
+  const login = String.fromEnvironment('LOGIN');
+  const pass = String.fromEnvironment('PASS');
   final authData = await pb.admins.authWithPassword(login, pass);
 
   Future<void> createRecord(int number) async {
